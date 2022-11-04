@@ -1,34 +1,45 @@
-from functools import wraps
-from pathlib import Path
-from typing import TypeVar, Optional
+import logging
+from typing import Optional, TypeVar
 
 import yaml
+from functools import wraps
+from pathlib import Path
 from yaml import CSafeLoader
+
+import inspect
 
 _CV = TypeVar("_CV", bound=type)
 
+logger = logging.getLogger(__name__)
 
-def get_conf(conf_name: str):
-    text_content = Path(conf_name).read_text()
+
+def get_conf(conf_name: str) -> dict:
+    file = Path(conf_name)
+    if not file.exists():
+        logger.warning(f"File {file} was not found. Using default values...")
+        return {}
+    text_content = file.read_text()
     conf = yaml.load(text_content, CSafeLoader)
     return {k.replace("-", "_"): v for k, v in conf.items()}
 
 
 def inject_properties(
-    cls: Optional[_CV] = None, /, *,
+    cls: Optional[_CV] = None,
+    /,
+    *,
     filename: str = "application.yml",
-    ignore_case: bool = True
+    ignore_case: bool = True,
 ):
     @wraps(cls)
     def wrapper(obj) -> _CV:
         annotated_class_vars = obj.__annotations__
         default_class_vars = {
             k: v
-            for k, v in obj.__dict__.items()
+            for k, v in inspect.getmembers(obj)
             if not (
-                k.startswith("__") or
-                callable(v) or
-                isinstance(v, (property, classmethod))
+                k.startswith("__")
+                or callable(v)
+                or isinstance(v, (property, classmethod))
             )
         }
         conf = get_conf(filename)
@@ -41,33 +52,7 @@ def inject_properties(
             val = conf.get(class_var_, None)
             setattr(obj, class_var, val)
         return obj
+
     if cls is None:
         return wrapper
     return wrapper(cls)
-
-
-@inject_properties()
-class A:
-    bool: str
-    array: str = "str"
-    NESTED_DICT: dict
-
-    def __init__(self, par1: int, par2: str = ""):
-        self._par1 = par1
-        self._par2 = par2
-
-    def method(self):
-        print(self.bool, self.array, self.NESTED_DICT)
-
-    @property
-    def prop(self):
-        return
-
-    @classmethod
-    def class_method(cls):
-        return
-
-
-if __name__ == '__main__':
-    a = A(1)
-    a.method()
