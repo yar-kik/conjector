@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Optional, TypeVar
 
@@ -19,8 +20,21 @@ def get_conf(conf_name: str) -> dict:
         logger.warning(f"File {file} was not found. Using default values...")
         return {}
     text_content = file.read_text()
-    conf = yaml.load(text_content, CSafeLoader)
+    if conf_name.endswith(".yml") or conf_name.endswith(".yaml"):
+        conf = get_yaml_config(text_content)
+    elif conf_name.endswith(".json"):
+        conf = get_json_config(text_content)
+    else:
+        raise NotImplementedError("Specified config type isn't supported!")
     return {k.replace("-", "_"): v for k, v in conf.items()}
+
+
+def get_yaml_config(text_content: str) -> dict:
+    return yaml.load(text_content, CSafeLoader)
+
+
+def get_json_config(text_content: str) -> dict:
+    return json.loads(text_content)
 
 
 def inject_properties(
