@@ -1,5 +1,3 @@
-from typing import List
-
 from main import inject_properties
 
 
