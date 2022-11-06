@@ -1,0 +1,17 @@
+str_var: root
+int_var: 0
+
+first:
+  str_var: first
+  int_var: 10
+
+second:
+  first:
+    str_var: second
+    int_var: 20
+
+third:
+  second:
+    first:
+      str_var: third
+      int_var: 30

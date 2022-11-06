@@ -3,7 +3,7 @@ import logging
 from typing import Optional, TypeVar
 
 import yaml
-from functools import wraps
+from functools import wraps, reduce
 from pathlib import Path
 from yaml import CSafeLoader
 
@@ -44,6 +44,7 @@ def inject_properties(
     filename: str = "application.yml",
     ignore_case: bool = True,
     override_default: bool = False,
+    root: str = "",
 ):
     @wraps(cls)
     def wrapper(obj) -> _CV:
@@ -58,6 +59,9 @@ def inject_properties(
             )
         }
         conf = get_conf(filename)
+        if root:
+            nested_path = root.split(".")
+            conf = reduce(lambda x, y: x[y], nested_path, conf)
         if ignore_case:
             conf = {k.lower(): v for k, v in conf.items()}
         for class_var in annotated_class_vars:
