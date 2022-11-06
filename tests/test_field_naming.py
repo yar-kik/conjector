@@ -38,5 +38,8 @@ def test_case_insensitive_fields():
 
 def test_properties_with_hyphens():
     assert ClassWithHyphen.class_var_with_hyphens == "class-var-with-hyphens"
-    assert ClassWithHyphen.class_var_with_underscores == "class_var_with_underscores"
+    assert (
+        ClassWithHyphen.class_var_with_underscores
+        == "class_var_with_underscores"
+    )
     assert ClassWithHyphen.class_var_with_mixed == "class_var-with-mixed"

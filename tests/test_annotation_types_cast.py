@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import Dict, List
 
 from main import inject_properties
 
@@ -18,7 +18,7 @@ class NotCastedVar(BaseVar):
     pass
 
 
-@inject_properties(filename="types_cast.yml", cast=True)
+@inject_properties(filename="types_cast.yml", type_cast=True)
 class CastedVar(BaseVar):
     pass
 
@@ -28,7 +28,7 @@ class DefaultNotCastedVar(BaseVar):
     pass
 
 
-@inject_properties(filename="not_existing.yml", cast=True)
+@inject_properties(filename="not_existing.yml", type_cast=True)
 class DefaultCastedVar(BaseVar):
     pass
 
