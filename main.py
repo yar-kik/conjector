@@ -45,6 +45,7 @@ def inject_properties(
     ignore_case: bool = True,
     override_default: bool = False,
     root: str = "",
+    cast: bool = False,
 ):
     @wraps(cls)
     def wrapper(obj) -> _CV:
@@ -68,7 +69,11 @@ def inject_properties(
             if not override_default and class_var in default_class_vars:
                 continue
             class_var_ = class_var.lower() if ignore_case else class_var
-            val = conf.get(class_var_, None)
+            val = conf.get(class_var_)
+            if cast:
+                type_ = annotated_class_vars[class_var]
+                if isinstance(type_, type):
+                    val = type_(val) if val else type_()
             setattr(obj, class_var, val)
         return obj
 

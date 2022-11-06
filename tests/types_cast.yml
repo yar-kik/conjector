@@ -1,0 +1,11 @@
+list_var:
+  - "1"
+  - "2"
+  - "3"
+dict_var:
+  key: "false"
+int_var: "10"
+float_var: "10.5"
+bool_var: true
+none_var: null
+str_var: "str"
