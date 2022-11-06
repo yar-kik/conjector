@@ -1,3 +1,5 @@
+import pytest
+
 from main import inject_properties
 
 
@@ -29,3 +31,9 @@ def test_config_different_types_equal():
     assert JSONConfig.float_var == YAMLConfig.float_var
     assert JSONConfig.none_var == YAMLConfig.none_var
     assert JSONConfig.str_var == YAMLConfig.str_var
+
+
+def test_wrong_type_is_not_supported():
+    with pytest.raises(NotImplementedError):
+        clss = type("WrongConfigType", (BaseVar,), {})
+        inject_properties(clss, filename="file_with_invalid.ext")
