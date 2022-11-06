@@ -11,33 +11,13 @@ class BaseVar:
     str_var: str
 
 
-class DefaultVar:
-    list_var: list = []
-    dict_var: dict = {}
-    int_var: int = 0
-    float_var: float = 0.0
-    bool_var: bool = False
-    none_var: None = None
-    str_var: str = ""
-
-
 @inject_properties(filename="not_existing.yml")
-class DefaultVarNotExistingProps(DefaultVar):
-    pass
-
-
-@inject_properties(filename="not_existing.yml")
-class BaseVarNotExistingProps(BaseVar):
+class NotExistingProps(BaseVar):
     pass
 
 
 @inject_properties
-class BaseVarExistingProps(BaseVar):
-    pass
-
-
-@inject_properties
-class DefaultVarExistingProps(DefaultVar):
+class ExistingProps(BaseVar):
     pass
 
 
@@ -52,43 +32,23 @@ class WithParens(BaseVar):
 
 
 def test_class_variables_if_not_default_and_property_not_exists():
-    assert BaseVarNotExistingProps.bool_var is None
-    assert BaseVarNotExistingProps.dict_var is None
-    assert BaseVarNotExistingProps.list_var is None
-    assert BaseVarNotExistingProps.int_var is None
-    assert BaseVarNotExistingProps.float_var is None
-    assert BaseVarNotExistingProps.none_var is None
-    assert BaseVarNotExistingProps.str_var is None
-
-
-def test_class_variables_if_default_and_property_not_exists():
-    assert DefaultVarNotExistingProps.bool_var == False
-    assert DefaultVarNotExistingProps.dict_var == {}
-    assert DefaultVarNotExistingProps.list_var == []
-    assert DefaultVarNotExistingProps.int_var == 0
-    assert DefaultVarNotExistingProps.float_var == 0.0
-    assert DefaultVarNotExistingProps.none_var is None
-    assert DefaultVarNotExistingProps.str_var == ""
-
-
-def test_class_variables_if_default_and_property_exists():
-    assert DefaultVarExistingProps.bool_var == False
-    assert DefaultVarExistingProps.dict_var == {}
-    assert DefaultVarExistingProps.list_var == []
-    assert DefaultVarExistingProps.int_var == 0
-    assert DefaultVarExistingProps.float_var == 0.0
-    assert DefaultVarExistingProps.none_var is None
-    assert DefaultVarExistingProps.str_var == ""
+    assert NotExistingProps.bool_var is None
+    assert NotExistingProps.dict_var is None
+    assert NotExistingProps.list_var is None
+    assert NotExistingProps.int_var is None
+    assert NotExistingProps.float_var is None
+    assert NotExistingProps.none_var is None
+    assert NotExistingProps.str_var is None
 
 
 def test_class_variables_if_properties_exist():
-    assert BaseVarExistingProps.bool_var == True
-    assert BaseVarExistingProps.dict_var == {"key": "value"}
-    assert BaseVarExistingProps.list_var == ["a", "b", "c"]
-    assert BaseVarExistingProps.int_var == 10
-    assert BaseVarExistingProps.float_var == 10.5
-    assert BaseVarExistingProps.none_var is None
-    assert BaseVarExistingProps.str_var == "str"
+    assert ExistingProps.bool_var == True
+    assert ExistingProps.dict_var == {"key": "value"}
+    assert ExistingProps.list_var == ["a", "b", "c"]
+    assert ExistingProps.int_var == 10
+    assert ExistingProps.float_var == 10.5
+    assert ExistingProps.none_var is None
+    assert ExistingProps.str_var == "str"
 
 
 def test_decorator_with_and_without_parens_are_same():

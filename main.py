@@ -43,6 +43,7 @@ def inject_properties(
     *,
     filename: str = "application.yml",
     ignore_case: bool = True,
+    override_default: bool = False,
 ):
     @wraps(cls)
     def wrapper(obj) -> _CV:
@@ -60,7 +61,7 @@ def inject_properties(
         if ignore_case:
             conf = {k.lower(): v for k, v in conf.items()}
         for class_var in annotated_class_vars:
-            if class_var in default_class_vars:
+            if not override_default and class_var in default_class_vars:
                 continue
             class_var_ = class_var.lower() if ignore_case else class_var
             val = conf.get(class_var_, None)
