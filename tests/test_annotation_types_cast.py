@@ -64,8 +64,8 @@ def test_default_not_casted():
 
 
 def test_default_casted():
-    assert DefaultCastedVar.list_var is None
-    assert DefaultCastedVar.dict_var is None
+    assert DefaultCastedVar.list_var == []
+    assert DefaultCastedVar.dict_var == {}
     assert DefaultCastedVar.int_var == 0
     assert DefaultCastedVar.float_var == 0.0
     assert DefaultCastedVar.bool_var == False
