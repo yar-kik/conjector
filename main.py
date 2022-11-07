@@ -1,5 +1,15 @@
-import typing
-from typing import Any, Callable, Dict, Optional, TypeVar
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    get_origin,
+    get_type_hints,
+    overload,
+)
 
 import inspect
 import json
@@ -9,7 +19,6 @@ from functools import reduce, wraps
 from pathlib import Path
 from yaml import CSafeLoader
 
-_CV = TypeVar("_CV", bound=type)
 _K = TypeVar("_K")
 _V = TypeVar("_V")
 _T = TypeVar("_T")
@@ -40,19 +49,44 @@ def _get_json_config(text_content: str) -> dict:
     return json.loads(text_content)
 
 
+@overload
 def inject_properties(
-    cls: Optional[_CV] = None,
-    /,
+    cls: None = None,
     *,
     filename: str = "application.yml",
     ignore_case: bool = True,
     override_default: bool = False,
     root: str = "",
     type_cast: bool = False,
-) -> Callable:
+) -> Callable[[Type[_T]], Type[_T]]:
+    ...
+
+
+@overload
+def inject_properties(
+    cls: Type[_T],
+    *,
+    filename: str = "application.yml",
+    ignore_case: bool = True,
+    override_default: bool = False,
+    root: str = "",
+    type_cast: bool = False,
+) -> Type[_T]:
+    ...
+
+
+def inject_properties(
+    cls: Optional[Type[_T]] = None,
+    *,
+    filename: str = "application.yml",
+    ignore_case: bool = True,
+    override_default: bool = False,
+    root: str = "",
+    type_cast: bool = False,
+) -> Union[Callable[[Type[_T]], Type[_T]], Type[_T]]:
     @wraps(cls)  # type: ignore
-    def wrapper(obj: _CV) -> _CV:
-        annotated_class_vars = typing.get_type_hints(obj)
+    def wrapper(obj: Type[_T]) -> Type[_T]:
+        annotated_class_vars = get_type_hints(obj)
         default_class_vars = _get_default_class_var(obj)
         config = _process_config(get_config(filename), ignore_case, root)
         for class_var, type_ in annotated_class_vars.items():
@@ -70,7 +104,7 @@ def inject_properties(
 
 
 def _cast_types(type_: type, value: Any) -> Any:
-    type_ = origin if (origin := typing.get_origin(type_)) else type_
+    type_ = origin if (origin := get_origin(type_)) else type_
     if isinstance(type_, type):
         return type_(value) if value else type_()
     return value
