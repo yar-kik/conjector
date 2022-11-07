@@ -32,7 +32,7 @@ def existing_config_fixt():
 
 
 @pytest.fixture
-def decorator_without_parens_fixt():
+def without_parens_fixt():
     @properties
     class WithoutParens(BaseVar):
         pass
@@ -41,7 +41,7 @@ def decorator_without_parens_fixt():
 
 
 @pytest.fixture
-def decorator_with_parens_fixt():
+def with_parens_fixt():
     @properties()
     class WithParens(BaseVar):
         pass
