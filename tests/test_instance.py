@@ -1,7 +1,7 @@
-from main import inject_properties
+from app_properties import properties
 
 
-@inject_properties
+@properties
 class BaseVar:
     list_var: list
     dict_var: dict

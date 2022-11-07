@@ -1,4 +1,4 @@
-from main import inject_properties
+from app_properties import properties
 
 
 class Base:
@@ -6,22 +6,22 @@ class Base:
     int_var: int
 
 
-@inject_properties(filename="nested_conf.yml")
+@properties(filename="nested_conf.yml")
 class ZeroRoot(Base):
     pass
 
 
-@inject_properties(filename="nested_conf.yml", root="first")
+@properties(filename="nested_conf.yml", root="first")
 class FirstLevelRoot(Base):
     pass
 
 
-@inject_properties(filename="nested_conf.yml", root="second.first")
+@properties(filename="nested_conf.yml", root="second.first")
 class SecondLevelRoot(Base):
     pass
 
 
-@inject_properties(filename="nested_conf.yml", root="third.second.first")
+@properties(filename="nested_conf.yml", root="third.second.first")
 class ThirdLevelRoot(Base):
     pass
 

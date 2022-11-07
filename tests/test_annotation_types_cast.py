@@ -1,6 +1,8 @@
 from typing import Dict, List
 
-from main import inject_properties
+import pytest
+
+from app_properties import properties
 
 
 class BaseVar:
@@ -13,61 +15,77 @@ class BaseVar:
     str_var: str
 
 
-@inject_properties(filename="types_cast.yml")
-class NotCastedVar(BaseVar):
-    pass
+@pytest.fixture
+def not_casted_var_fixt():
+    @properties(filename="types_cast.yml")
+    class NotCastedVar(BaseVar):
+        pass
+
+    return NotCastedVar
 
 
-@inject_properties(filename="types_cast.yml", type_cast=True)
-class CastedVar(BaseVar):
-    pass
+@pytest.fixture
+def casted_var_fixt():
+    @properties(filename="types_cast.yml", type_cast=True)
+    class CastedVar(BaseVar):
+        pass
+
+    return CastedVar
 
 
-@inject_properties(filename="not_existing.yml")
-class DefaultNotCastedVar(BaseVar):
-    pass
+@pytest.fixture
+def default_not_casted_var_fixt():
+    @properties(filename="not_existing.yml")
+    class DefaultNotCastedVar(BaseVar):
+        pass
+
+    return DefaultNotCastedVar
 
 
-@inject_properties(filename="not_existing.yml", type_cast=True)
-class DefaultCastedVar(BaseVar):
-    pass
+@pytest.fixture
+def default_casted_var_fixt():
+    @properties(filename="not_existing.yml", type_cast=True)
+    class DefaultCastedVar(BaseVar):
+        pass
+
+    return DefaultCastedVar
 
 
-def test_not_casted_vars():
-    assert NotCastedVar.list_var == ["1", "2", "3"]
-    assert NotCastedVar.dict_var == {"key": "false"}
-    assert NotCastedVar.int_var == "10"
-    assert NotCastedVar.float_var == "10.5"
-    assert NotCastedVar.bool_var == True
-    assert NotCastedVar.none_var == None
-    assert NotCastedVar.str_var == "str"
+def test_not_casted_vars(not_casted_var_fixt):
+    assert not_casted_var_fixt.list_var == ["1", "2", "3"]
+    assert not_casted_var_fixt.dict_var == {"key": "false"}
+    assert not_casted_var_fixt.int_var == "10"
+    assert not_casted_var_fixt.float_var == "10.5"
+    assert not_casted_var_fixt.bool_var == True
+    assert not_casted_var_fixt.none_var == None
+    assert not_casted_var_fixt.str_var == "str"
 
 
-def test_casted_vars():
-    assert CastedVar.list_var == ["1", "2", "3"]
-    assert CastedVar.dict_var == {"key": "false"}
-    assert CastedVar.int_var == 10
-    assert CastedVar.float_var == 10.5
-    assert CastedVar.bool_var == True
-    assert CastedVar.none_var == None
-    assert CastedVar.str_var == "str"
+def test_casted_vars(casted_var_fixt):
+    assert casted_var_fixt.list_var == ["1", "2", "3"]
+    assert casted_var_fixt.dict_var == {"key": "false"}
+    assert casted_var_fixt.int_var == 10
+    assert casted_var_fixt.float_var == 10.5
+    assert casted_var_fixt.bool_var == True
+    assert casted_var_fixt.none_var == None
+    assert casted_var_fixt.str_var == "str"
 
 
-def test_default_not_casted():
-    assert DefaultNotCastedVar.list_var is None
-    assert DefaultNotCastedVar.dict_var is None
-    assert DefaultNotCastedVar.int_var is None
-    assert DefaultNotCastedVar.float_var is None
-    assert DefaultNotCastedVar.bool_var is None
-    assert DefaultNotCastedVar.none_var is None
-    assert DefaultNotCastedVar.str_var is None
+def test_default_not_casted(default_not_casted_var_fixt):
+    assert default_not_casted_var_fixt.list_var is None
+    assert default_not_casted_var_fixt.dict_var is None
+    assert default_not_casted_var_fixt.int_var is None
+    assert default_not_casted_var_fixt.float_var is None
+    assert default_not_casted_var_fixt.bool_var is None
+    assert default_not_casted_var_fixt.none_var is None
+    assert default_not_casted_var_fixt.str_var is None
 
 
-def test_default_casted():
-    assert DefaultCastedVar.list_var == []
-    assert DefaultCastedVar.dict_var == {}
-    assert DefaultCastedVar.int_var == 0
-    assert DefaultCastedVar.float_var == 0.0
-    assert DefaultCastedVar.bool_var == False
-    assert DefaultCastedVar.none_var is None
-    assert DefaultCastedVar.str_var == ""
+def test_default_casted(default_casted_var_fixt):
+    assert default_casted_var_fixt.list_var == []
+    assert default_casted_var_fixt.dict_var == {}
+    assert default_casted_var_fixt.int_var == 0
+    assert default_casted_var_fixt.float_var == 0.0
+    assert default_casted_var_fixt.bool_var == False
+    assert default_casted_var_fixt.none_var is None
+    assert default_casted_var_fixt.str_var == ""

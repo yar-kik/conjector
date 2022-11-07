@@ -1,4 +1,6 @@
-from main import inject_properties
+import pytest
+
+from app_properties import properties
 
 
 class BaseCase:
@@ -7,39 +9,57 @@ class BaseCase:
     PascalCase: str
 
 
-@inject_properties(ignore_case=False)
-class CaseSensitive(BaseCase):
-    pass
+@pytest.fixture
+def case_sensitive_fixt():
+    @properties(ignore_case=False)
+    class CaseSensitive(BaseCase):
+        pass
+
+    return CaseSensitive
 
 
-@inject_properties
-class CaseInsensitive(BaseCase):
-    pass
+@pytest.fixture
+def case_insensitive_fixt():
+    @properties
+    class CaseInsensitive(BaseCase):
+        pass
+
+    return CaseInsensitive
 
 
-@inject_properties
-class ClassWithHyphen:
-    class_var_with_hyphens: str
-    class_var_with_underscores: str
-    class_var_with_mixed: str
+@pytest.fixture
+def class_var_with_hyphen_fixt():
+    @properties
+    class ClassWithHyphen:
+        class_var_with_hyphens: str
+        class_var_with_underscores: str
+        class_var_with_mixed: str
+
+    return ClassWithHyphen
 
 
-def test_case_sensitive_fields():
-    assert CaseSensitive.camelCase == "camelCase"
-    assert CaseSensitive.snake_case == "snake_case"
-    assert CaseSensitive.PascalCase == "PascalCase"
+def test_case_sensitive_fields(case_sensitive_fixt):
+    assert case_sensitive_fixt.camelCase == "camelCase"
+    assert case_sensitive_fixt.snake_case == "snake_case"
+    assert case_sensitive_fixt.PascalCase == "PascalCase"
 
 
-def test_case_insensitive_fields():
-    assert CaseInsensitive.camelCase == "camelcase"
-    assert CaseInsensitive.snake_case == "snake_case"
-    assert CaseInsensitive.PascalCase == "pascalcase"
+def test_case_insensitive_fields(case_insensitive_fixt):
+    assert case_insensitive_fixt.camelCase == "camelcase"
+    assert case_insensitive_fixt.snake_case == "snake_case"
+    assert case_insensitive_fixt.PascalCase == "pascalcase"
 
 
-def test_properties_with_hyphens():
-    assert ClassWithHyphen.class_var_with_hyphens == "class-var-with-hyphens"
+def test_properties_with_hyphens(class_var_with_hyphen_fixt):
     assert (
-        ClassWithHyphen.class_var_with_underscores
+        class_var_with_hyphen_fixt.class_var_with_hyphens
+        == "class-var-with-hyphens"
+    )
+    assert (
+        class_var_with_hyphen_fixt.class_var_with_underscores
         == "class_var_with_underscores"
     )
-    assert ClassWithHyphen.class_var_with_mixed == "class_var-with-mixed"
+    assert (
+        class_var_with_hyphen_fixt.class_var_with_mixed
+        == "class_var-with-mixed"
+    )

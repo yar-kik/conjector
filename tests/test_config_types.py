@@ -1,6 +1,6 @@
 import pytest
 
-from main import inject_properties
+from app_properties import properties
 
 
 class BaseVar:
@@ -13,27 +13,37 @@ class BaseVar:
     str_var: str
 
 
-@inject_properties(filename="application.json")
-class JSONConfig(BaseVar):
-    pass
+@pytest.fixture
+def json_config_fixt():
+    @properties(filename="application.json")
+    class JSONConfig(BaseVar):
+        pass
+
+    return JSONConfig
 
 
-@inject_properties
-class YAMLConfig(BaseVar):
-    pass
+@pytest.fixture
+def yaml_config_fixt():
+    @properties
+    class YAMLConfig(BaseVar):
+        pass
+
+    return YAMLConfig
 
 
-def test_config_different_types_equal():
-    assert JSONConfig.bool_var == YAMLConfig.bool_var
-    assert JSONConfig.dict_var == YAMLConfig.dict_var
-    assert JSONConfig.list_var == YAMLConfig.list_var
-    assert JSONConfig.int_var == YAMLConfig.int_var
-    assert JSONConfig.float_var == YAMLConfig.float_var
-    assert JSONConfig.none_var == YAMLConfig.none_var
-    assert JSONConfig.str_var == YAMLConfig.str_var
+def test_config_different_types_equal(json_config_fixt, yaml_config_fixt):
+    assert json_config_fixt.bool_var == yaml_config_fixt.bool_var
+    assert json_config_fixt.dict_var == yaml_config_fixt.dict_var
+    assert json_config_fixt.list_var == yaml_config_fixt.list_var
+    assert json_config_fixt.int_var == yaml_config_fixt.int_var
+    assert json_config_fixt.float_var == yaml_config_fixt.float_var
+    assert json_config_fixt.none_var == yaml_config_fixt.none_var
+    assert json_config_fixt.str_var == yaml_config_fixt.str_var
 
 
 def test_wrong_type_is_not_supported():
     with pytest.raises(NotImplementedError):
-        clss = type("WrongConfigType", (BaseVar,), {})
-        inject_properties(clss, filename="file_with_invalid.ext")
+
+        @properties(filename="file_with_invalid.ext")
+        class WrongConfigType(BaseVar):
+            ...

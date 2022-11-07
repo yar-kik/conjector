@@ -1,4 +1,6 @@
-from main import inject_properties
+import pytest
+
+from app_properties import properties
 
 
 class BaseVar:
@@ -11,51 +13,71 @@ class BaseVar:
     str_var: str
 
 
-@inject_properties(filename="not_existing.yml")
-class NotExistingProps(BaseVar):
-    pass
+@pytest.fixture
+def not_existing_config_fixt():
+    @properties(filename="not_existing.yml")
+    class NotExistingProps(BaseVar):
+        pass
+
+    return NotExistingProps
 
 
-@inject_properties
-class ExistingProps(BaseVar):
-    pass
+@pytest.fixture
+def existing_config_fixt():
+    @properties
+    class ExistingProps(BaseVar):
+        pass
+
+    return ExistingProps
 
 
-@inject_properties
-class WithoutParens(BaseVar):
-    pass
+@pytest.fixture
+def decorator_without_parens_fixt():
+    @properties
+    class WithoutParens(BaseVar):
+        pass
+
+    return WithoutParens
 
 
-@inject_properties()
-class WithParens(BaseVar):
-    pass
+@pytest.fixture
+def decorator_with_parens_fixt():
+    @properties()
+    class WithParens(BaseVar):
+        pass
+
+    return WithParens
 
 
-def test_class_variables_if_not_default_and_property_not_exists():
-    assert NotExistingProps.bool_var is None
-    assert NotExistingProps.dict_var is None
-    assert NotExistingProps.list_var is None
-    assert NotExistingProps.int_var is None
-    assert NotExistingProps.float_var is None
-    assert NotExistingProps.none_var is None
-    assert NotExistingProps.str_var is None
+def test_class_variables_if_not_default_and_property_not_exists(
+    not_existing_config_fixt,
+):
+    assert not_existing_config_fixt.bool_var is None
+    assert not_existing_config_fixt.dict_var is None
+    assert not_existing_config_fixt.list_var is None
+    assert not_existing_config_fixt.int_var is None
+    assert not_existing_config_fixt.float_var is None
+    assert not_existing_config_fixt.none_var is None
+    assert not_existing_config_fixt.str_var is None
 
 
-def test_class_variables_if_properties_exist():
-    assert ExistingProps.bool_var == True
-    assert ExistingProps.dict_var == {"key": "value"}
-    assert ExistingProps.list_var == ["a", "b", "c"]
-    assert ExistingProps.int_var == 10
-    assert ExistingProps.float_var == 10.5
-    assert ExistingProps.none_var is None
-    assert ExistingProps.str_var == "str"
+def test_class_variables_if_properties_exist(existing_config_fixt):
+    assert existing_config_fixt.bool_var == True
+    assert existing_config_fixt.dict_var == {"key": "value"}
+    assert existing_config_fixt.list_var == ["a", "b", "c"]
+    assert existing_config_fixt.int_var == 10
+    assert existing_config_fixt.float_var == 10.5
+    assert existing_config_fixt.none_var is None
+    assert existing_config_fixt.str_var == "str"
 
 
-def test_decorator_with_and_without_parens_are_same():
-    assert WithParens.bool_var == WithoutParens.bool_var
-    assert WithParens.dict_var == WithoutParens.dict_var
-    assert WithParens.list_var == WithoutParens.list_var
-    assert WithParens.int_var == WithoutParens.int_var
-    assert WithParens.float_var == WithoutParens.float_var
-    assert WithParens.none_var == WithoutParens.none_var
-    assert WithParens.str_var == WithoutParens.str_var
+def test_decorator_with_and_without_parens_are_same(
+    with_parens_fixt, without_parens_fixt
+):
+    assert with_parens_fixt.bool_var == without_parens_fixt.bool_var
+    assert with_parens_fixt.dict_var == without_parens_fixt.dict_var
+    assert with_parens_fixt.list_var == without_parens_fixt.list_var
+    assert with_parens_fixt.int_var == without_parens_fixt.int_var
+    assert with_parens_fixt.float_var == without_parens_fixt.float_var
+    assert with_parens_fixt.none_var == without_parens_fixt.none_var
+    assert with_parens_fixt.str_var == without_parens_fixt.str_var

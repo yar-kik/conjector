@@ -1,4 +1,4 @@
-from main import inject_properties
+from app_properties import properties
 
 
 class DefaultVar:
@@ -11,12 +11,12 @@ class DefaultVar:
     str_var: str = ""
 
 
-@inject_properties(override_default=True)
+@properties(override_default=True)
 class OverrideDefault(DefaultVar):
     pass
 
 
-@inject_properties
+@properties
 class AllowDefault(DefaultVar):
     pass
 
