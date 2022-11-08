@@ -5,6 +5,12 @@
 [![Pre-commit: enabled](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat)](https://github.com/pre-commit/pre-commit)
 
 
+## How to install
+To install this library just enter:
+```shell
+pip intall py-app-properties
+```
+
 ## How To Use
 The main purpose of this library is to simplify work with an application configs.
 
