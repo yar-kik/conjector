@@ -2,7 +2,7 @@ import io
 import re
 import setuptools
 
-with io.open("version.py", encoding="utf-8") as f:
+with io.open("app_properties/__init__.py", encoding="utf-8") as f:
     regex_result = re.search(r"__version__ = \"(.+)\"", f.read())
     version = regex_result.group(1) if regex_result else "0.1.0"
 
