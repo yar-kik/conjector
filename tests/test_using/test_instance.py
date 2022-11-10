@@ -1,7 +1,7 @@
 from app_properties import properties
 
 
-@properties
+@properties(filename="tests/application.yml")
 class BaseVar:
     list_var: list
     dict_var: dict

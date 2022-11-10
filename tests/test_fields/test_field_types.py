@@ -24,7 +24,7 @@ def not_existing_config_fixt():
 
 @pytest.fixture
 def existing_config_fixt():
-    @properties
+    @properties(filename="tests/application.yml")
     class ExistingProps(BaseVar):
         pass
 

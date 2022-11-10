@@ -4,21 +4,17 @@ from dataclasses import dataclass
 from app_properties import properties
 
 
-@dataclass(init=False)
-class BaseVar:
-    list_var: list
-    dict_var: dict
-    int_var: int
-    str_var: str
-
-
 @pytest.fixture
 def dataclass_fixt():
-    @properties()
-    class DTO(BaseVar):
-        pass
+    @properties(filename="tests/application.yml")
+    @dataclass(init=False)
+    class BaseVar:
+        list_var: list
+        dict_var: dict
+        int_var: int
+        str_var: str
 
-    return DTO
+    return BaseVar
 
 
 def test_dataclass_before_init(dataclass_fixt):
