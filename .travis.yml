@@ -1,0 +1,12 @@
+language: python
+python:
+  - "3.8"
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+script:
+  - flake8 app_properties/
+  - black --line-length 79 --check app_properties/
+  - mypy app_properties/
+  - coverage run --source=app_properties -m pytest && coveralls
+  - coverage report --fail-under=80

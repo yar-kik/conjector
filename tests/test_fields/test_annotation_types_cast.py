@@ -17,7 +17,7 @@ class BaseVar:
 
 @pytest.fixture
 def not_casted_var_fixt():
-    @properties(filename="types_cast.yml")
+    @properties(filename="tests/types_cast.yml")
     class NotCastedVar(BaseVar):
         pass
 
@@ -26,7 +26,7 @@ def not_casted_var_fixt():
 
 @pytest.fixture
 def casted_var_fixt():
-    @properties(filename="types_cast.yml", type_cast=True)
+    @properties(filename="tests/types_cast.yml", type_cast=True)
     class CastedVar(BaseVar):
         pass
 
@@ -35,7 +35,7 @@ def casted_var_fixt():
 
 @pytest.fixture
 def default_not_casted_var_fixt():
-    @properties(filename="not_existing.yml")
+    @properties(filename="tests/not_existing.yml")
     class DefaultNotCastedVar(BaseVar):
         pass
 
@@ -44,7 +44,7 @@ def default_not_casted_var_fixt():
 
 @pytest.fixture
 def default_casted_var_fixt():
-    @properties(filename="not_existing.yml", type_cast=True)
+    @properties(filename="tests/not_existing.yml", type_cast=True)
     class DefaultCastedVar(BaseVar):
         pass
 

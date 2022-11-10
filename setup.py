@@ -22,4 +22,8 @@ setuptools.setup(
     packages=["app_properties"],
     install_requires=["PyYAML>=6.0"],
     python_requires=">=3.8",
+    classifiers=[
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+    ],
 )

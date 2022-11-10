@@ -11,12 +11,12 @@ class DefaultVar:
     str_var: str = ""
 
 
-@properties(override_default=True)
+@properties(filename="tests/application.yml", override_default=True)
 class OverrideDefault(DefaultVar):
     pass
 
 
-@properties
+@properties(filename="tests/application.yml")
 class AllowDefault(DefaultVar):
     pass
 
