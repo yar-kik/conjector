@@ -5,6 +5,9 @@
 [![Pre-commit: enabled](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white&style=flat)](https://github.com/pre-commit/pre-commit)
 
 
+## What is this
+This is a simple library to inject non-sensitive configurations like message templates, dictionaries, and lists with required settings into class variables.
+
 ## How to install
 To install this library just enter:
 ```shell
@@ -12,15 +15,15 @@ pip intall py-app-properties
 ```
 
 ## How To Use
-The main purpose of this library is to simplify work with an application configs.
+The main purpose of this library is to simplify work with an application config.
 
-Let's assume that you have some email service which requires a couple message templates.
-It'll look like:
+Let's assume that you have some email service that requires a couple of message templates (it could be also a dictionary with default HTTP headers and other kinds of mappings).
+It'll look like this:
 ```python
 class EmailService:
     CONFIRM_REGISTRATION_TEMPLATE = "Thanks for your registration!"
     RESET_PASSWORD_TEMPLATE = "To reset a password follow the link - {link}"
-    # and another templates...
+    # and other templates...
     
     def __init__(self, mail_sender: IMailSender) -> None:
         self._sender = mail_sender
@@ -31,13 +34,13 @@ class EmailService:
     def send_reset_password_email(self, username: str, link: str) -> None:
         template = self.RESET_PASSWORD_TEMPLATE.format(link=link)
         self._sender.send_mail(username, template)
-    # and another methods...
+    # and other methods...
 ```
 As you can see, there are some problems connected with storing message templates in class variables:
-* Templates could have a big size and that decrease readability of a whole class.
+* Templates could have a big size and that decreases the readability of a whole class.
 * It's also hard to maintain different versions of templates.
 
-But if you have config file `my_config.yml` with content below, you can "inject" variables to the `EmailService` class:
+But if you have config file `my_config.yml` with the content below, you can "inject" variables to the `EmailService` class:
 ```yaml
 email_templates:
   confirm_registration_template: Thanks for your registration!
@@ -49,7 +52,7 @@ email_templates:
 class EmailService:
     CONFIRM_REGISTRATION_TEMPLATE: str
     RESET_PASSWORD_TEMPLATE: str
-    # and another templates...
+    # and other templates...
     
     def __init__(self, mail_sender: IMailSender) -> None:
         self._sender = mail_sender
@@ -60,9 +63,9 @@ class EmailService:
     def send_reset_password_email(self, username: str, link: str) -> None:
         template = self.RESET_PASSWORD_TEMPLATE.format(link=link)
         self._sender.send_mail(username, template)
-    # and another methods...
+    # and other methods...
 ```
-And that's all. Just one decorator and some file with application properties.
+And that's all. Just one decorator and a file with application properties.
 You can even inject all necessary data into dataclass object:
 ```python
 @properties(filename="my_config.yml", root="email_templates")
@@ -92,3 +95,6 @@ class Config:
 * Overriding default values with `override_default=True`
 * Type casting for primitive types. Nested types will be added soon.
 * Case ignoring by default is true. You can switch off this option.
+
+## About contributing
+You will make this library better if you open issues or create pull requests with improvements [here](https://github.com/yar-kik/py-app-properties). Also, you can write me directly in a private message if you have some questions or recommendations.
