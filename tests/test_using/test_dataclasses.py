@@ -8,13 +8,13 @@ from app_properties import properties
 def dataclass_fixt():
     @properties(filename="tests/application.yml")
     @dataclass(init=False)
-    class BaseVar:
+    class BaseClass:
         list_var: list
         dict_var: dict
         int_var: int
         str_var: str
 
-    return BaseVar
+    return BaseClass
 
 
 def test_dataclass_before_init(dataclass_fixt):

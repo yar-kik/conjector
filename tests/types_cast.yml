@@ -1,11 +1,81 @@
-list_var:
-  - "1"
-  - "2"
-  - "3"
-dict_var:
-  key: "false"
-int_var: "10"
-float_var: "10.5"
-bool_var: true
-none_var: null
-str_var: "str"
+primitive:
+  int_var: "10"
+  float_var: "10.5"
+  bool_var: true
+  none_var: null
+  str_var: "str"
+
+tuple:
+  keyword_named_tuple_var:
+    str_var: str2
+    int_var: 20
+  position_named_tuple_var:
+    - 30
+    - str3
+  int_with_ellipsis_tuple_var:
+    - 10
+    - 15
+  wrong_tuple_var: 42
+  single_int_tuple_var:
+    - 40
+  int_str_float_tuple_var:
+    - 50
+    - "60"
+    - 70.5
+  unspecified_tuple_var:
+    - "12"
+    - "14"
+
+
+dict:
+  simple_dict_var:
+    int_var: 10
+    str_var: str1
+  typed_dict_var:
+    int_var: 20
+    str_var: str2
+  wrong_dict_var:
+    - val1
+    - val2
+
+set:
+  int_set_var:
+    - 1
+    - 2
+    - 3
+  int_frozenset_var:
+    - 4
+    - 5
+    - 6
+  unspecified_set_var:
+    - "10"
+    - "20"
+    - "30"
+  unspecified_frozenset_var:
+    - "40"
+    - "50"
+    - "60"
+
+boolean:
+  bool_bool_vars:
+    - true
+    - false
+  int_bool_vars:
+    - 1
+    - 0
+  str_bool_vars:
+    - "True"
+    - "False"
+  wrong_bool_vars:
+    - wrong_bool
+    - wrong_bool
+
+list:
+  int_list_var:
+    - 1
+    - 2
+    - 3
+  unspecified_list_var:
+    - "10"
+    - "20"
+    - "30"
