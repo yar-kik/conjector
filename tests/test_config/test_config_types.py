@@ -3,7 +3,7 @@ import pytest
 from app_properties import properties
 
 
-class BaseVar:
+class BaseClass:
     list_var: list
     dict_var: dict
     int_var: int
@@ -16,7 +16,7 @@ class BaseVar:
 @pytest.fixture
 def json_config_fixt():
     @properties(filename="tests/application.json")
-    class JSONConfig(BaseVar):
+    class JSONConfig(BaseClass):
         pass
 
     return JSONConfig
@@ -25,7 +25,7 @@ def json_config_fixt():
 @pytest.fixture
 def yaml_config_fixt():
     @properties(filename="tests/application.yml")
-    class YAMLConfig(BaseVar):
+    class YAMLConfig(BaseClass):
         pass
 
     return YAMLConfig
@@ -45,5 +45,5 @@ def test_wrong_type_is_not_supported():
     with pytest.raises(NotImplementedError):
 
         @properties(filename="tests/file_with_invalid.ext")
-        class WrongConfigType(BaseVar):
+        class WrongConfigType(BaseClass):
             ...

@@ -1,7 +1,7 @@
 # Python Application Properties
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-app-properties)
-![PyPI](https://img.shields.io/pypi/v/py-app-properties)
-![PyPI - License](https://img.shields.io/pypi/l/py-app-properties)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-app-properties)](https://pypi.org/project/py-app-properties/)
+[![PyPI - Package Version](https://img.shields.io/pypi/v/py-app-properties)](https://pypi.org/project/py-app-properties/)
+[![PyPI - License](https://img.shields.io/pypi/l/py-app-properties)](https://pypi.org/project/py-app-properties/)
 [![Build Status](https://app.travis-ci.com/yar-kik/py-app-properties.svg?branch=master)](https://app.travis-ci.com/yar-kik/py-app-properties)
 [![Coverage Status](https://coveralls.io/repos/github/yar-kik/py-app-properties/badge.svg?branch=dev)](https://coveralls.io/github/yar-kik/py-app-properties?branch=dev)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
