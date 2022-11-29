@@ -50,15 +50,15 @@ def properties(
     ignore_case: bool = True,
     override_default: bool = False,
     root: str = "",
-    type_cast: bool = False,
+    type_cast: bool = True,
 ) -> Union[Callable[[Type[_T]], Type[_T]], Type[_T]]:
     @functools.wraps(cls)  # type: ignore
     def wrapper(obj: Type[_T]) -> Type[_T]:
         type_converter = TypeConverter()
-        config_handler = ConfigHandler()
+        config_handler = ConfigHandler(filename)
         annotated_class_vars = get_type_hints(obj)
         default_class_vars = _get_default_class_var(obj)
-        config = config_handler.get_config(filename, ignore_case, root)
+        config = config_handler.get_config(ignore_case, root)
         for class_var, type_ in annotated_class_vars.items():
             if not override_default and class_var in default_class_vars:
                 continue

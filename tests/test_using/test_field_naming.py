@@ -11,7 +11,7 @@ class BaseCase:
 
 @pytest.fixture
 def case_sensitive_fixt():
-    @properties(filename="tests/application.yml", ignore_case=False)
+    @properties(filename="application.yml", ignore_case=False)
     class CaseSensitive(BaseCase):
         pass
 
@@ -20,7 +20,7 @@ def case_sensitive_fixt():
 
 @pytest.fixture
 def case_insensitive_fixt():
-    @properties(filename="tests/application.yml")
+    @properties(filename="application.yml")
     class CaseInsensitive(BaseCase):
         pass
 
@@ -29,7 +29,7 @@ def case_insensitive_fixt():
 
 @pytest.fixture
 def class_var_with_hyphen_fixt():
-    @properties(filename="tests/application.yml")
+    @properties(filename="application.yml")
     class ClassWithHyphen:
         class_var_with_hyphens: str
         class_var_with_underscores: str

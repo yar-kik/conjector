@@ -14,9 +14,7 @@ class Base:
 
 @pytest.fixture
 def boolean_class_fixt():
-    @properties(
-        filename="tests/types_cast.yml", type_cast=True, root="boolean"
-    )
+    @properties(filename="types_cast.yml", root="boolean")
     class BooleanClass(Base):
         pass
 

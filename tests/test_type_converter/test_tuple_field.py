@@ -18,7 +18,7 @@ class BaseClass:
 
 @pytest.fixture
 def tuple_class_fixt():
-    @properties(filename="tests/types_cast.yml", type_cast=True, root="tuple")
+    @properties(filename="types_cast.yml", root="tuple")
     class TupleClass(BaseClass):
         pass
 
@@ -41,16 +41,12 @@ def test_field_with_tuple(tuple_class_fixt):
 def test_field_with_invalid_tuple():
     with pytest.raises(ValueError):
 
-        @properties(
-            filename="tests/types_cast.yml", type_cast=True, root="tuple"
-        )
+        @properties(filename="types_cast.yml", root="tuple")
         class InvalidTupleClass:
             wrong_tuple_var: tuple
 
     with pytest.raises(ValueError):
 
-        @properties(
-            filename="tests/types_cast.yml", type_cast=True, root="tuple"
-        )
+        @properties(filename="types_cast.yml", root="tuple")
         class InvalidTupleClass:
             wrong_tuple_var: CustomTuple

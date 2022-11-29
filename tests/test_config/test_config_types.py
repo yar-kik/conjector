@@ -15,7 +15,7 @@ class BaseClass:
 
 @pytest.fixture
 def json_config_fixt():
-    @properties(filename="tests/application.json")
+    @properties(filename="application.json")
     class JSONConfig(BaseClass):
         pass
 
@@ -24,7 +24,7 @@ def json_config_fixt():
 
 @pytest.fixture
 def yaml_config_fixt():
-    @properties(filename="tests/application.yml")
+    @properties(filename="application.yml")
     class YAMLConfig(BaseClass):
         pass
 
@@ -44,6 +44,6 @@ def test_config_different_types_equal(json_config_fixt, yaml_config_fixt):
 def test_wrong_type_is_not_supported():
     with pytest.raises(NotImplementedError):
 
-        @properties(filename="tests/file_with_invalid.ext")
+        @properties(filename="file_with_invalid.ext")
         class WrongConfigType(BaseClass):
             ...
