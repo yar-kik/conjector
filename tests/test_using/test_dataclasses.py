@@ -6,7 +6,7 @@ from app_properties import properties
 
 @pytest.fixture
 def dataclass_fixt():
-    @properties(filename="tests/application.yml")
+    @properties(filename="application.yml")
     @dataclass(init=False)
     class BaseClass:
         list_var: list

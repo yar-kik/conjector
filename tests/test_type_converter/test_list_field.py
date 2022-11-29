@@ -12,7 +12,7 @@ class BaseClass:
 
 @pytest.fixture
 def list_class_fixt():
-    @properties(filename="tests/types_cast.yml", type_cast=True, root="list")
+    @properties(filename="types_cast.yml", root="list")
     class ListClass(BaseClass):
         pass
 

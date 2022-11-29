@@ -6,22 +6,22 @@ class Base:
     int_var: int
 
 
-@properties(filename="tests/nested_conf.yml")
+@properties(filename="nested_conf.yml")
 class ZeroRoot(Base):
     pass
 
 
-@properties(filename="tests/nested_conf.yml", root="first")
+@properties(filename="nested_conf.yml", root="first")
 class FirstLevelRoot(Base):
     pass
 
 
-@properties(filename="tests/nested_conf.yml", root="second.first")
+@properties(filename="nested_conf.yml", root="second.first")
 class SecondLevelRoot(Base):
     pass
 
 
-@properties(filename="tests/nested_conf.yml", root="third.second.first")
+@properties(filename="nested_conf.yml", root="third.second.first")
 class ThirdLevelRoot(Base):
     pass
 

@@ -77,22 +77,22 @@ class TypeConverter:
         if not get_type_hints(type_):
             args = (Any, ...) if self._is_unspecified(args) else args
             args = self._resolve_ellipsis(args, values)
-            casted_values: Any = [
+            cast_values: Any = [
                 self.cast_types(arg, value) for arg, value in zip(args, values)
             ]
-            return tuple(casted_values)
+            return tuple(cast_values)
         if isinstance(values, Mapping):
-            casted_values = {}
+            cast_values = {}
             for field, arg in get_type_hints(type_).items():
-                casted_values[field] = self.cast_types(arg, values.get(field))
-            return type_(**casted_values)
+                cast_values[field] = self.cast_types(arg, values.get(field))
+            return type_(**cast_values)
         if isinstance(values, Iterable):
-            casted_values = []
+            cast_values = []
             for arg, value in zip_longest(
                 get_type_hints(type_).values(), values
             ):
-                casted_values.append(self.cast_types(arg, value))
-            return type_(*casted_values)
+                cast_values.append(self.cast_types(arg, value))
+            return type_(*cast_values)
         raise ValueError("NamedTuple values should be iterable or mapping!")
 
     def _apply_dict(self, type_: type, args: tuple, values: Any) -> dict:
@@ -105,10 +105,10 @@ class TypeConverter:
                 self.cast_types(args[0], k): self.cast_types(args[1], v)
                 for k, v in values.items()
             }
-        casted_values = {}
+        cast_values = {}
         for field, arg in get_type_hints(type_).items():
-            casted_values[field] = self.cast_types(arg, values.get(field))
-        return type_(**casted_values)
+            cast_values[field] = self.cast_types(arg, values.get(field))
+        return type_(**cast_values)
 
     def _apply_dataclass(self, type_: type, values: Any) -> Any:
         if values is None:

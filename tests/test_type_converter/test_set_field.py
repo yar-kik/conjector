@@ -14,7 +14,7 @@ class BaseClass:
 
 @pytest.fixture
 def set_class_fixt():
-    @properties(filename="tests/types_cast.yml", type_cast=True, root="set")
+    @properties(filename="types_cast.yml", root="set")
     class SetClass(BaseClass):
         pass
 

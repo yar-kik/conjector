@@ -1,38 +1,54 @@
 from typing import Callable, Dict, TypeVar
 
 import functools
+import inspect
 import json
-import logging
 import pathlib
 import yaml
+from os.path import dirname, join, normpath, sep
 
 _K = TypeVar("_K")
 _V = TypeVar("_V")
 _T = TypeVar("_T")
 
-logger = logging.getLogger(__name__)
-
 
 class ConfigHandler:
-    def get_config(self, conf_name: str, ignore_case: bool, root: str) -> dict:
-        raw_config = self._read_config(conf_name)
+    def __init__(self, config_name: str) -> None:
+        self._conf_name = config_name
+        self._caller_dir = self._get_caller_directory()
+
+    def get_config(self, ignore_case: bool, root: str) -> dict:
+        file = self._get_config_file()
+        raw_config = self._resolve_config_format(file)
         return self._process_config(raw_config, ignore_case, root)
 
-    def _read_config(self, conf_name: str) -> dict:
-        file = pathlib.Path(conf_name)
-        if not file.exists():
-            logger.warning(
-                f"File {file} was not found. Using default values..."
-            )
-            return {}
+    def _get_caller_directory(self) -> str:
+        stack = inspect.stack()
+        stack_depth = 3
+        # if used decorator without parens:
+        if stack[stack_depth].filename.split(sep)[-2:] == [
+            "app_properties",
+            "main.py",
+        ]:
+            stack_depth = 4
+        return dirname(stack[stack_depth].filename)
+
+    def _resolve_config_format(self, file: pathlib.Path) -> dict:
         text_content = file.read_text()
-        if conf_name.endswith(".yml") or conf_name.endswith(".yaml"):
+        if file.suffix in (".yml", ".yaml"):
             conf = self._get_yaml_config(text_content)
-        elif conf_name.endswith(".json"):
+        elif file.suffix == ".json":
             conf = self._get_json_config(text_content)
         else:
             raise NotImplementedError("Specified config type isn't supported!")
         return conf
+
+    def _get_config_file(self) -> pathlib.Path:
+        abs_config_path = join(self._caller_dir, normpath(self._conf_name))
+        file = pathlib.Path(abs_config_path)
+        if not file.exists():
+            raise FileNotFoundError(f"File '{file.name}' is not found!")
+        return file
 
     def _get_yaml_config(self, text_content: str) -> dict:
         return yaml.load(text_content, yaml.CSafeLoader)

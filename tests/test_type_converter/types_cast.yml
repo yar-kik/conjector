@@ -79,3 +79,65 @@ list:
     - "10"
     - "20"
     - "30"
+
+nested:
+  list_with_int:
+    - 1
+    - 2
+    - 3
+  typeddict_with_namedtuple:
+    namedtuple:
+      int_var: 10
+      list_with_int:
+        - 12
+        - 14
+        - 16
+  dataclass_with_nested:
+    list_with_int:
+      - 4
+      - 5
+      - 6
+    typeddict:
+      namedtuple:
+        int_var: 20
+        list_with_int:
+          - 22
+          - 24
+          - 26
+    namedtuple:
+      int_var: 30
+      list_with_int:
+        - 30
+        - 33
+        - 36
+    inner_class:
+      set_with_str:
+        - "7"
+        - "8"
+        - "9"
+      tuple_with_float:
+        - "10.5"
+        - "12.0"
+        - "13.5"
+
+dataclass:
+  dataclass_var:
+    int_var: 10
+    list_var:
+      - a
+      - b
+      - c
+
+  dataclass_field_class:
+    init_false_var: init_false_var
+    default_var: 42
+    default_factory_var:
+      - 16
+      - 18
+
+base:
+  list_var:
+  set_var:
+  dict_var:
+  tuple_var:
+  dataclass_var:

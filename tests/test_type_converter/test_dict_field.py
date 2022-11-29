@@ -14,7 +14,7 @@ class BaseClass:
 
 @pytest.fixture
 def dict_class_fixt():
-    @properties(filename="tests/types_cast.yml", type_cast=True, root="dict")
+    @properties(filename="types_cast.yml", root="dict")
     class DictClass(BaseClass):
         pass
 
@@ -34,8 +34,6 @@ def test_field_with_dict(dict_class_fixt):
 def test_field_with_invalid_dict():
     with pytest.raises(ValueError):
 
-        @properties(
-            filename="tests/types_cast.yml", type_cast=True, root="dict"
-        )
+        @properties(filename="types_cast.yml", root="dict")
         class InvalidDictClass:
             wrong_dict_var: dict
