@@ -141,3 +141,30 @@ base:
   dict_var:
   tuple_var:
   dataclass_var:
+
+union:
+  optional_int_empty:
+  optional_int_wrong_value: wrong_value
+  optional_int_presented: 10
+  optional_list_empty:
+  optional_list_presented:
+    - 12
+    - 14
+    - 16
+  union_float_int_str: 10.5
+  union_int_float_str: 10.5
+  union_str_int_float: 10.5
+  union_dict_list_presented_dict:
+    key: value
+  union_dict_list_presented_list:
+    - key: value
+  list_optional_int_mixed:
+    - 20
+    -
+    - 40
+  list_union_int_str_mixed:
+    - 50
+    - "str"
+    - "str2"
+    - 60
+  wrong_union_dict_list: wrong_value
