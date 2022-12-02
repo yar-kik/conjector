@@ -26,10 +26,8 @@ class TypeConverter:
             and isinstance(value, type_)
         ):
             return value
-        if type_.__name__ in ("Union", "UnionType"):
-            raise NotImplementedError(
-                "Union and Optional are not implemented!"
-            )
+        if type_ == Union or type_.__name__ == "UnionType":
+            return self._apply_union(args, value)
         if issubclass(type_, list):
             return self._apply_list(args, value)
         if issubclass(type_, tuple):
@@ -132,6 +130,20 @@ class TypeConverter:
         if ... in args:
             return tuple(args[0] for _ in range(value_len))
         return args
+
+    def _apply_union(self, args: Any, value: Any) -> Any:
+        is_optional = type(None) in args
+        if is_optional and value is None:
+            return None
+        args = [i for i in args if not self._is_none_type(i)]
+        for arg in args:
+            try:
+                return self.cast_types(arg, value)
+            except ValueError:
+                continue
+        if is_optional:
+            return None
+        raise ValueError(f"Couldn't cast '{value}' to any of types: {args}")
 
     def _is_terminate(self, type_: Any, args: tuple) -> bool:
         return (
