@@ -25,6 +25,7 @@ def class_with_dataclasses_fixt():
     class MainClass:
         dataclass_var: TestClass
         dataclass_field_class: DataclassFieldClass
+        wrong_dataclass_var: TestClass
 
     return MainClass
 
@@ -39,4 +40,7 @@ def test_field_is_dataclass(class_with_dataclasses_fixt):
     assert class_with_dataclasses_fixt.dataclass_field_class == field_dataclass
     assert not hasattr(
         class_with_dataclasses_fixt.dataclass_field_class, "init_false_var"
+    )
+    assert class_with_dataclasses_fixt.wrong_dataclass_var == TestClass(
+        int_var=0, list_var=[]
     )

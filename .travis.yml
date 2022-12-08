@@ -10,3 +10,10 @@ script:
   - mypy app_properties/
   - coverage run --source=app_properties -m pytest && coveralls
   - coverage report --fail-under=80
+
+deploy:
+  provider: pypi
+  username: "__token__"
+  password: $PYPI_API_TOKEN
+  on:
+    tags: true
