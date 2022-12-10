@@ -30,6 +30,15 @@ def class_with_dataclasses_fixt():
     return MainClass
 
 
+@pytest.fixture
+def class_with_missing_fixt():
+    @properties(filename="types_cast.yml")
+    class MissingValuesClass:
+        not_existing_var: DataclassFieldClass
+
+    return MissingValuesClass
+
+
 def test_field_is_dataclass(class_with_dataclasses_fixt):
     field_dataclass = DataclassFieldClass(
         default_var=42, default_factory_var=[16, 18]
@@ -43,4 +52,10 @@ def test_field_is_dataclass(class_with_dataclasses_fixt):
     )
     assert class_with_dataclasses_fixt.wrong_dataclass_var == TestClass(
         int_var=0, list_var=[]
+    )
+
+
+def test_missing_values_in_config(class_with_missing_fixt):
+    assert class_with_missing_fixt.not_existing_var == DataclassFieldClass(
+        default_var=12, default_factory_var=[15]
     )

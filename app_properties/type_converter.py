@@ -11,7 +11,7 @@ from typing import (
 
 import inspect
 from collections.abc import Iterable, Mapping
-from dataclasses import fields, is_dataclass
+from dataclasses import MISSING, Field, fields, is_dataclass
 from itertools import zip_longest
 
 
@@ -115,10 +115,18 @@ class TypeConverter:
         for field in fields(type_):
             if not field.init:
                 continue
+            default = self._get_dataclass_default(field)
             field_mapping[field.name] = self.cast_types(
-                field.type, values.get(field.name)
+                field.type, values.get(field.name, default)
             )
         return type_(**field_mapping)
+
+    def _get_dataclass_default(self, field: Field) -> Any:
+        if field.default is not MISSING:
+            return field.default
+        if field.default_factory is not MISSING:
+            return field.default_factory()
+        return None
 
     def _resolve_ellipsis(
         self, args: Tuple[type, ...], values: Any
