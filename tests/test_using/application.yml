@@ -18,3 +18,7 @@ pascalcase: pascalcase
 class-var-with-hyphens: class-var-with-hyphens
 class_var_with_underscores: class_var_with_underscores
 class_var-with-mixed: class_var-with-mixed
+
+lazy_init:
+  config_var: some_config_value
+  config_default_var: another_config_value
