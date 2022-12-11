@@ -2,6 +2,7 @@ from typing import (
     Any,
     Optional,
     Tuple,
+    Type,
     TypeVar,
     Union,
     get_args,
@@ -12,6 +13,7 @@ from typing import (
 import inspect
 from collections.abc import Iterable, Mapping
 from dataclasses import MISSING, Field, fields, is_dataclass
+from datetime import date, datetime, time, timedelta
 from itertools import zip_longest
 
 
@@ -36,6 +38,8 @@ class TypeConverter:
             return self._apply_dict(type_, args, value)
         if issubclass(type_, (set, frozenset)):
             return self._apply_set(type_, args, value)
+        if issubclass(type_, (datetime, date, time, timedelta)):
+            return self._apply_datetime(type_, value)
         if is_dataclass(type_):
             return self._apply_dataclass(type_, value)
         return self._cast_base(type_, value)
@@ -120,6 +124,23 @@ class TypeConverter:
                 field.type, values.get(field.name, default)
             )
         return type_(**field_mapping)
+
+    def _apply_datetime(
+        self, type_: Type[Union[datetime, date, time, timedelta]], values: Any
+    ) -> Any:
+        if issubclass(type_, timedelta):
+            if isinstance(values, Mapping):
+                return timedelta(**values)
+            raise ValueError(f"Cannot cast value {values} to timedelta")
+        if isinstance(values, str):
+            return type_.fromisoformat(values)
+        if isinstance(values, Mapping):
+            return type_(**values)
+        if isinstance(values, Iterable):
+            return type_(*values)
+        if issubclass(type_, datetime) and isinstance(values, (int, float)):
+            return datetime.utcfromtimestamp(values)
+        raise ValueError(f"Cannot cast value {values} to {type_.__name__}!")
 
     def _get_dataclass_default(self, field: Field) -> Any:
         if field.default is not MISSING:

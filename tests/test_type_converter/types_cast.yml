@@ -171,3 +171,48 @@ union:
     - "str2"
     - 60
   wrong_union_dict_list: wrong_value
+
+datetime:
+  timestamp_datetime_var: 1670705784
+  keywords_datetime_var:
+    year: 2022
+    month: 12
+    day: 10
+    hour: 22
+    minute: 43
+    second: 0
+  position_datetime_var:
+    - 2022
+    - 12
+    - 10
+    - 22
+    - 44
+    - 20
+  text_datetime_var: 2022-12-10T22:44:56
+
+  keywords_date_var:
+    year: 2022
+    month: 11
+    day: 11
+  position_date_var:
+    - 2022
+    - 10
+    - 20
+  text_date_var: 2022-11-24
+
+  keywords_time_var:
+    hour: 2
+    minute: 3
+    second: 0
+  position_time_var:
+    - 10
+    - 23
+    - 20
+  text_time_var: "08:49:56"
+
+  keywords_timedelta_var:
+    days: 1
+    hours: 12
+    minutes: 42
+    seconds: 34
+    weeks: 1
