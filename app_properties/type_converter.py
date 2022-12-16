@@ -14,21 +14,23 @@ import inspect
 from collections.abc import Iterable, Mapping
 from dataclasses import MISSING, Field, fields, is_dataclass
 from datetime import date, datetime, time, timedelta
+from enum import Enum
 from itertools import zip_longest
 
 
 class TypeConverter:
+    _primitive_types = (str, int, float, bool, type(None), Enum)
+
     def cast_types(self, type_: Union[type, Any], value: Any) -> Any:
         args = args if (args := get_args(type_)) else (Any,)
         type_ = origin if (origin := get_origin(type_)) else type_
         if (
-            isinstance(type_, TypeVar)
-            or type_ == Any
+            self._is_unspecified(type_)
             or self._is_terminate(type_, args)
             and isinstance(value, type_)
         ):
             return value
-        if type_ == Union or type_.__name__ == "UnionType":
+        if self._is_union(type_):
             return self._apply_union(args, value)
         if issubclass(type_, list):
             return self._apply_list(args, value)
@@ -38,14 +40,16 @@ class TypeConverter:
             return self._apply_dict(type_, args, value)
         if issubclass(type_, (set, frozenset)):
             return self._apply_set(type_, args, value)
-        if issubclass(type_, (datetime, date, time, timedelta)):
+        if self._is_datetime(type_):
             return self._apply_datetime(type_, value)
         if is_dataclass(type_):
             return self._apply_dataclass(type_, value)
         return self._cast_base(type_, value)
 
     def _cast_base(self, type_: type, value: Any) -> Any:
-        if value is None or self._is_none_type(type_):
+        if self._is_none_type(type_):
+            return None
+        if value is None and not issubclass(type_, Enum):
             return type_()
         if type_ == bool:
             return self._cast_bool(value)
@@ -77,7 +81,7 @@ class TypeConverter:
         if values is None:
             values = tuple()
         if not get_type_hints(type_):
-            args = (Any, ...) if self._is_unspecified(args) else args
+            args = (Any, ...) if self._is_any(args) else args
             args = self._resolve_ellipsis(args, values)
             cast_values: Any = [
                 self.cast_types(arg, value) for arg, value in zip(args, values)
@@ -102,7 +106,7 @@ class TypeConverter:
             values = dict()
         if not isinstance(values, dict):
             raise ValueError("Value isn't mapping!")
-        if not self._is_unspecified(args):
+        if not self._is_any(args):
             return {
                 self.cast_types(args[0], k): self.cast_types(args[1], v)
                 for k, v in values.items()
@@ -176,16 +180,25 @@ class TypeConverter:
 
     def _is_terminate(self, type_: Any, args: tuple) -> bool:
         return (
-            self._is_unspecified(args)
+            self._is_any(args)
             and not self._is_primitive(type_)
             and not get_type_hints(type_)
         )
 
     def _is_primitive(self, type_: type) -> bool:
-        return type_ in (str, int, float, bool, type(None))
+        return any(issubclass(type_, i) for i in self._primitive_types)
 
     def _is_none_type(self, arg: Any) -> bool:
         return inspect.isclass(arg) and issubclass(arg, type(None))
 
-    def _is_unspecified(self, args: Tuple[type, ...]) -> bool:
+    def _is_any(self, args: Tuple[type, ...]) -> bool:
         return args == (Any,)
+
+    def _is_unspecified(self, type_: Any) -> bool:
+        return isinstance(type_, TypeVar) or type_ == Any
+
+    def _is_datetime(self, type_: type) -> bool:
+        return issubclass(type_, (datetime, date, time, timedelta))
+
+    def _is_union(self, type_: type) -> bool:
+        return type_ == Union or type_.__name__ == "UnionType"
