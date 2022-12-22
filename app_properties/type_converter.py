@@ -11,6 +11,7 @@ from typing import (
 )
 
 import inspect
+import re
 from collections.abc import Iterable, Mapping
 from dataclasses import MISSING, Field, fields, is_dataclass
 from datetime import date, datetime, time, timedelta
@@ -46,13 +47,17 @@ class TypeConverter:
             return self._apply_dataclass(type_, value)
         return self._cast_base(type_, value)
 
-    def _cast_base(self, type_: type, value: Any) -> Any:
+    def _cast_base(self, type_: Type, value: Any) -> Any:
         if self._is_none_type(type_):
             return None
-        if value is None and not issubclass(type_, Enum):
-            return type_()
         if type_ == bool:
             return self._cast_bool(value)
+        if type_ == re.Pattern:
+            return self._apply_regex_pattern(value)
+        if issubclass(type_, Enum):
+            return self._apply_enum(type_, value)
+        if value is None:
+            return type_()
         return type_(value)
 
     def _cast_bool(self, value: Any) -> Optional[bool]:
@@ -61,7 +66,7 @@ class TypeConverter:
         value = str(value)
         if value in ("true", "True", "1"):
             return True
-        if value in ("false", "False", "0"):
+        if value in ("false", "False", "0", "None"):
             return False
         return None
 
@@ -177,6 +182,14 @@ class TypeConverter:
         if is_optional:
             return None
         raise ValueError(f"Couldn't cast '{value}' to any of types: {args}")
+
+    def _apply_regex_pattern(self, values: Any) -> re.Pattern:
+        if not isinstance(values, str):
+            raise ValueError("Regex pattern should be string!")
+        return re.compile(values)
+
+    def _apply_enum(self, type_: Type[Enum], values: Any) -> Enum:
+        return type_(values)
 
     def _is_terminate(self, type_: Any, args: tuple) -> bool:
         return (
