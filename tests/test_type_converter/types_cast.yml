@@ -221,3 +221,7 @@ enum:
   simple_enum_var: GREEN
   int_enum_var: 3
   invalid_enum_var: INVALID
+
+regex:
+  some_pattern_var: \w+
+  wrong_pattern_var: 10
