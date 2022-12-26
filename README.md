@@ -1,9 +1,9 @@
-# Python Application Properties
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/py-app-properties)](https://pypi.org/project/py-app-properties/)
-[![PyPI - Package Version](https://img.shields.io/pypi/v/py-app-properties)](https://pypi.org/project/py-app-properties/)
-[![PyPI - License](https://img.shields.io/pypi/l/py-app-properties)](https://pypi.org/project/py-app-properties/)
-[![Build Status](https://app.travis-ci.com/yar-kik/py-app-properties.svg?branch=master)](https://app.travis-ci.com/yar-kik/py-app-properties)
-[![Coverage Status](https://coveralls.io/repos/github/yar-kik/py-app-properties/badge.svg?branch=master)](https://coveralls.io/github/yar-kik/py-app-properties?branch=master)
+# Python Config Injector
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/conjector)](https://pypi.org/project/conjector/)
+[![PyPI - Package Version](https://img.shields.io/pypi/v/conjector)](https://pypi.org/project/conjector/)
+[![PyPI - License](https://img.shields.io/pypi/l/conjector)](https://pypi.org/project/conjector/)
+[![Build Status](https://app.travis-ci.com/yar-kik/conjector.svg?branch=master)](https://app.travis-ci.com/yar-kik/conjector)
+[![Coverage Status](https://coveralls.io/repos/github/yar-kik/conjector/badge.svg?branch=master)](https://coveralls.io/github/yar-kik/conjector?branch=master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
@@ -12,7 +12,7 @@
 ## What is this
 It is a simple library to inject non-sensitive configurations into class variables.
 Basically, it's like `BaseSettings` in `pydantic` library but for constants in `json` and `yaml` formats.
-`py-app-properties` can work with different Python types (like `tuple`, `datetime`, `dataclass` and so on) and recursively cast config values to them. 
+`conjector` can work with different Python types (like `tuple`, `datetime`, `dataclass` and so on) and recursively cast config values to them. 
 
 ## When to use
 * If you deal with constants in your code, like error messages, default values for something, numeric coefficients, and so on.
@@ -23,7 +23,7 @@ Basically, it's like `BaseSettings` in `pydantic` library but for constants in `
 ## How to install
 To install this library just enter:
 ```shell
-pip install py-app-properties
+pip install conjector
 ```
 
 ## How to use
@@ -157,7 +157,7 @@ from app_properties import properties
 class SomeEnvDependingService:
     env_depend_var: str
 ```
-In this case, you set `CONFIG_FILENAME=application-dev.yml` in env variables, and `py-app-properties` will use that file.
+In this case, you set `CONFIG_FILENAME=application-dev.yml` in env variables, and `conjector` will use that file.
 
 ## Lazy initialization
 If you want to create some dataclass instance with filled required data during init, 
@@ -209,6 +209,7 @@ Bellow is the table to clarify the behavior of the `init_props` method.
 | -        | +       | +      | config        |
 | +        | ~       | -      | init          |
 | +        | ~       | +      | init \ config |
+
 _`+`- provided; `-`- missing; `~`- not affect._
 
 How you can see, when both `init` and `config` values provided, they are equally important,
@@ -239,4 +240,4 @@ The table below shows how config values (`json` syntax example) are cast to Pyth
 | `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
 
 ## About contributing
-You will make `py-app-properties` better if you open issues or create pull requests with improvements.
+You will make `conjector` better if you open issues or create pull requests with improvements.

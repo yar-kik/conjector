@@ -10,14 +10,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="py-app-properties",
+    name="conjector",
     version=version,
     author="Yaroslav Kikvadze",
     author_email="yaroslav.k@simporter.com",
-    description="Java application properties for Python",
+    description="Config injector for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/yar-kik/py-app-properties",
+    url="https://github.com/yar-kik/conjector",
     license="MIT",
     packages=["app_properties"],
     install_requires=["PyYAML>=6.0"],
