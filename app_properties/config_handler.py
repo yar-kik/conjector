@@ -51,7 +51,8 @@ class ConfigHandler:
         return file
 
     def _get_yaml_config(self, text_content: str) -> dict:
-        return yaml.load(text_content, yaml.CSafeLoader)
+        # equivalent of yaml.safe_load() but faster
+        return yaml.load(text_content, yaml.CSafeLoader)  # nosec
 
     def _get_json_config(self, text_content: str) -> dict:
         return json.loads(text_content)
