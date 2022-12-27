@@ -5,8 +5,8 @@ from app_properties import properties
 
 
 @pytest.fixture
-def datetime_class_fixt():
-    @properties(filename="types_cast.yml", root="datetime")
+def datetime_class_fixt(request):
+    @properties(filename=request.param, root="datetime")
     class DatetimeClass:
         timestamp_datetime_var: datetime.datetime
         keywords_datetime_var: datetime.datetime
@@ -17,8 +17,8 @@ def datetime_class_fixt():
 
 
 @pytest.fixture
-def date_class_fixt():
-    @properties(filename="types_cast.yml", root="datetime")
+def date_class_fixt(request):
+    @properties(filename=request.param, root="datetime")
     class DateClass:
         keywords_date_var: datetime.date
         position_date_var: datetime.date
@@ -28,8 +28,8 @@ def date_class_fixt():
 
 
 @pytest.fixture
-def time_class_fixt():
-    @properties(filename="types_cast.yml", root="datetime")
+def time_class_fixt(request):
+    @properties(filename=request.param, root="datetime")
     class TimeClass:
         keywords_time_var: datetime.time
         position_time_var: datetime.time
@@ -39,14 +39,19 @@ def time_class_fixt():
 
 
 @pytest.fixture
-def timedelta_class_fixt():
-    @properties(filename="types_cast.yml", root="datetime")
+def timedelta_class_fixt(request):
+    @properties(filename=request.param, root="datetime")
     class TimedeltaClass:
         keywords_timedelta_var: datetime.timedelta
 
     return TimedeltaClass
 
 
+@pytest.mark.parametrize(
+    "datetime_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_datetime_field(datetime_class_fixt):
     assert datetime_class_fixt.timestamp_datetime_var == datetime.datetime(
         year=2022, month=12, day=10, hour=20, minute=56, second=24
@@ -62,6 +67,11 @@ def test_datetime_field(datetime_class_fixt):
     )
 
 
+@pytest.mark.parametrize(
+    "date_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_date_field(date_class_fixt):
     assert date_class_fixt.keywords_date_var == datetime.date(
         year=2022, month=11, day=11
@@ -74,6 +84,11 @@ def test_date_field(date_class_fixt):
     )
 
 
+@pytest.mark.parametrize(
+    "time_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_time_field(time_class_fixt):
     assert time_class_fixt.keywords_time_var == datetime.time(
         hour=2, minute=3, second=0
@@ -86,33 +101,41 @@ def test_time_field(time_class_fixt):
     )
 
 
+@pytest.mark.parametrize(
+    "timedelta_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_timedelta_field(timedelta_class_fixt):
     assert timedelta_class_fixt.keywords_timedelta_var == datetime.timedelta(
         days=1, hours=12, minutes=42, seconds=34, weeks=1
     )
 
 
-def test_wrong_datetime_value():
+@pytest.mark.parametrize(
+    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+)
+def test_wrong_datetime_value(filename):
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="datetime")
+        @properties(filename=filename, root="datetime")
         class WrongDatetimeClass:
             wrong_datetime_var: datetime.datetime
 
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="datetime")
+        @properties(filename=filename, root="datetime")
         class WrongDateClass:
             wrong_date_var: datetime.date
 
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="datetime")
+        @properties(filename=filename, root="datetime")
         class WrongTimeClass:
             wrong_time_var: datetime.time
 
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="datetime")
+        @properties(filename=filename, root="datetime")
         class WrongTimedeltaClass:
             wrong_timedelta_var: datetime.timedelta

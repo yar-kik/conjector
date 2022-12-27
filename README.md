@@ -12,7 +12,7 @@
 
 ## What is this
 It is a simple library to inject non-sensitive configurations into class variables.
-Basically, it's like `BaseSettings` in `pydantic` library but for constants in `json` and `yaml` formats.
+Basically, it's like `BaseSettings` in `pydantic` library but for constants in `json`, `yaml` or `toml` formats.
 `conjector` can work with different Python types (like `tuple`, `datetime`, `dataclass` and so on) and recursively cast config values to them. 
 
 ## When to use
@@ -239,6 +239,11 @@ The table below shows how config values (`json` syntax example) are cast to Pyth
 | `datetime.timedelta`                         | `dict`                                | `{"days": 1, "hours": 2, "minutes": 10}`                                                                                                                       |
 | `enum.Enum`                                  | `str`<br/>`int`                       | `"VALUE"`<br/>`10`                                                                                                                                             |
 | `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
+
+___Warning:___ `toml` config format doesn't support heterogeneous types in an array, 
+like `["string", 10]`. So, using iterables with mixed types 
+(e.g. `list[str | int]` or `tuple[str, int]`) and corresponding type casting 
+aren't possible in this case.
 
 ## About contributing
 You will make `conjector` better if you open issues or create pull requests with improvements.

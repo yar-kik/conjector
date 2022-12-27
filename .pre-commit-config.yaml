@@ -19,7 +19,7 @@ repos:
   rev: v0.941
   hooks:
     - id: mypy
-      additional_dependencies: [types-PyYAML==6.0.12.1]
+      additional_dependencies: [types-PyYAML==6.0.12.1, types-toml==0.10.8.1]
       exclude: tests
 
 - repo: https://github.com/PyCQA/bandit

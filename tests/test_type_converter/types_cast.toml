@@ -1,0 +1,136 @@
+[primitive]
+int_var = "10"
+float_var = "10.5"
+bool_var = true
+str_var = "str"
+wrong_int_var = "10_wrong_int"
+wrong_float_var = "10,5"
+
+[tuple]
+int_with_ellipsis_tuple_var = [10, 15]
+wrong_tuple_var = 42
+single_int_tuple_var = [40]
+unspecified_tuple_var = ["12", "14"]
+
+[tuple.keyword_named_tuple_var]
+str_var = "str2"
+int_var = 20
+
+[dict]
+wrong_dict_var = ["val1", "val2"]
+
+[dict.simple_dict_var]
+int_var = 10
+str_var = "str1"
+
+[dict.typed_dict_var]
+int_var = 20
+str_var = "str2"
+
+[set]
+int_set_var = [1, 2, 3]
+int_frozenset_var = [4, 5, 6]
+unspecified_set_var = ["10", "20", "30"]
+unspecified_frozenset_var = ["40", "50", "60"]
+
+[boolean]
+bool_bool_vars = [true, false]
+int_bool_vars = [1, 0]
+str_bool_vars = ["True", "False"]
+wrong_bool_vars = ["wrong_bool", "wrong_bool"]
+
+[list]
+int_list_var = [1, 2, 3]
+unspecified_list_var = ["10", "20", "30"]
+
+[nested]
+list_with_int = [1, 2, 3]
+
+[nested.typeddict_with_namedtuple.namedtuple]
+int_var = 10
+list_with_int = [12, 14, 16]
+
+[nested.dataclass_with_nested]
+list_with_int = [4, 5, 6]
+
+[nested.dataclass_with_nested.typeddict.namedtuple]
+int_var = 20
+list_with_int = [22, 24, 26]
+
+[nested.dataclass_with_nested.namedtuple]
+int_var = 30
+list_with_int = [30, 33, 36]
+
+[nested.dataclass_with_nested.inner_class]
+set_with_str = ["7", "8", "9"]
+tuple_with_float = ["10.5", "12.0", "13.5"]
+
+[dataclass]
+[dataclass.dataclass_var]
+int_var = 10
+list_var = ["a", "b", "c"]
+
+[dataclass.dataclass_field_class]
+init_false_var = "init_false_var"
+default_var = 42
+default_factory_var = [16, 18]
+
+[base]
+
+[union]
+optional_int_wrong_value = "wrong_value"
+optional_int_presented = 10
+optional_list_presented = [12, 14, 16]
+union_float_int_str = 10.5
+union_int_float_str = 10.5
+union_str_int_float = 10.5
+wrong_union_dict_list = "wrong_value"
+
+[union.union_dict_list_presented_dict]
+key = "value"
+
+[[union.union_dict_list_presented_list]]
+key = "value"
+
+[datetime]
+timestamp_datetime_var = 1_670_705_784
+position_datetime_var = [2_022, 12, 10, 22, 44, 20]
+text_datetime_var = "2022-12-10T22:44:56"
+position_date_var = [2_022, 10, 20]
+text_date_var = "2022-11-24"
+position_time_var = [10, 23, 20]
+text_time_var = "08:49:56"
+
+[datetime.keywords_datetime_var]
+year = 2_022
+month = 12
+day = 10
+hour = 22
+minute = 43
+second = 0
+
+[datetime.keywords_date_var]
+year = 2_022
+month = 11
+day = 11
+
+[datetime.keywords_time_var]
+hour = 2
+minute = 3
+second = 0
+
+[datetime.keywords_timedelta_var]
+days = 1
+hours = 12
+minutes = 42
+seconds = 34
+weeks = 1
+
+[enum]
+simple_enum_var = "GREEN"
+int_enum_var = 3
+invalid_enum_var = "INVALID"
+
+[regex]
+some_pattern_var = "\\w+"
+wrong_pattern_var = 10

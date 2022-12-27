@@ -4,6 +4,7 @@ import functools
 import inspect
 import json
 import pathlib
+import toml
 import yaml
 from os.path import dirname, join, normpath, sep
 
@@ -39,6 +40,8 @@ class ConfigHandler:
             conf = self._get_yaml_config(text_content)
         elif file.suffix == ".json":
             conf = self._get_json_config(text_content)
+        elif file.suffix == ".toml":
+            conf = self._get_toml_config(text_content)
         else:
             raise NotImplementedError("Specified config type isn't supported!")
         return conf
@@ -56,6 +59,9 @@ class ConfigHandler:
 
     def _get_json_config(self, text_content: str) -> dict:
         return json.loads(text_content)
+
+    def _get_toml_config(self, text_content: str) -> dict:
+        return toml.loads(text_content)
 
     def _apply_to_key(
         self, mapping: Dict[_K, _V], func: Callable[[_K], _T]

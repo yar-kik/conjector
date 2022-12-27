@@ -13,14 +13,19 @@ class Base:
 
 
 @pytest.fixture
-def boolean_class_fixt():
-    @properties(filename="types_cast.yml", root="boolean")
+def boolean_class_fixt(request):
+    @properties(filename=request.param, root="boolean")
     class BooleanClass(Base):
         pass
 
     return BooleanClass
 
 
+@pytest.mark.parametrize(
+    "boolean_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_cast_boolean_vars(boolean_class_fixt):
     expected_booleans = (True, False)
     assert boolean_class_fixt.bool_bool_vars == expected_booleans

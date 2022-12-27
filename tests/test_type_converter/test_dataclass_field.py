@@ -20,8 +20,8 @@ class DataclassFieldClass:
 
 
 @pytest.fixture
-def class_with_dataclasses_fixt():
-    @properties(filename="types_cast.yml", root="dataclass")
+def class_with_dataclasses_fixt(request):
+    @properties(filename=request.param, root="dataclass")
     class MainClass:
         dataclass_var: TestClass
         dataclass_field_class: DataclassFieldClass
@@ -31,14 +31,19 @@ def class_with_dataclasses_fixt():
 
 
 @pytest.fixture
-def class_with_missing_fixt():
-    @properties(filename="types_cast.yml")
+def class_with_missing_fixt(request):
+    @properties(filename=request.param)
     class MissingValuesClass:
         not_existing_var: DataclassFieldClass
 
     return MissingValuesClass
 
 
+@pytest.mark.parametrize(
+    "class_with_dataclasses_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_field_is_dataclass(class_with_dataclasses_fixt):
     field_dataclass = DataclassFieldClass(
         default_var=42, default_factory_var=[16, 18]
@@ -55,6 +60,11 @@ def test_field_is_dataclass(class_with_dataclasses_fixt):
     )
 
 
+@pytest.mark.parametrize(
+    "class_with_missing_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_missing_values_in_config(class_with_missing_fixt):
     assert class_with_missing_fixt.not_existing_var == DataclassFieldClass(
         default_var=12, default_factory_var=[15]
