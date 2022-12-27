@@ -23,14 +23,19 @@ class BaseClass:
 
 
 @pytest.fixture
-def union_class_fixt():
-    @properties(filename="types_cast.yml", root="union")
+def union_class_fixt(request):
+    @properties(filename=request.param, root="union")
     class UnionClass(BaseClass):
         pass
 
     return UnionClass
 
 
+@pytest.mark.parametrize(
+    "union_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_optional_field(union_class_fixt):
     assert union_class_fixt.optional_int_empty is None
     assert union_class_fixt.optional_int_wrong_value is None
@@ -39,6 +44,11 @@ def test_optional_field(union_class_fixt):
     assert union_class_fixt.optional_list_presented == [12, 14, 16]
 
 
+@pytest.mark.parametrize(
+    "union_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_union_field(union_class_fixt):
     assert union_class_fixt.union_float_int_str == 10.5
     assert union_class_fixt.union_int_float_str == 10
@@ -49,14 +59,20 @@ def test_union_field(union_class_fixt):
     ]
 
 
+@pytest.mark.parametrize(
+    "union_class_fixt", ("types_cast.yml", "types_cast.json"), indirect=True
+)
 def test_mixed_union_field(union_class_fixt):
     assert union_class_fixt.list_optional_int_mixed == [20, None, 40]
     assert union_class_fixt.list_union_int_str_mixed == [50, "str", "str2", 60]
 
 
-def test_cannot_cast_to_any_type():
+@pytest.mark.parametrize(
+    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+)
+def test_cannot_cast_to_any_type(filename):
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="union")
+        @properties(filename=filename, root="union")
         class NotCastUnionClass:
             wrong_union_dict_list: Union[dict, List[dict]]

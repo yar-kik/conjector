@@ -63,8 +63,8 @@ def properties(
     :param cls: class to inject constants. Passed implicit when decorator
     is used with or without parenthesis.
     :param filename: name of file with constants. `yaml` and `json` formats are
-    supported. Config file will be searched in the same directory where is file
-    with used decorator.
+    fully supported. `toml` is supported but with some limitations. Config file
+    will be searched in the same directory where is file with used decorator.
     :param ignore_case: ignore case for field names or not.
     :param override_default: override default class vars or stay as is.
     :param root: for nested config - field names separated with dots, like

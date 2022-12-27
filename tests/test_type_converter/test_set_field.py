@@ -13,14 +13,19 @@ class BaseClass:
 
 
 @pytest.fixture
-def set_class_fixt():
-    @properties(filename="types_cast.yml", root="set")
+def set_class_fixt(request):
+    @properties(filename=request.param, root="set")
     class SetClass(BaseClass):
         pass
 
     return SetClass
 
 
+@pytest.mark.parametrize(
+    "set_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_field_with_set(set_class_fixt):
     assert set_class_fixt.int_set_var == {1, 2, 3}
     assert set_class_fixt.int_frozenset_var == frozenset([4, 5, 6])

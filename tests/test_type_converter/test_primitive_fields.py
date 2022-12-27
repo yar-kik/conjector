@@ -12,8 +12,8 @@ class BaseClass:
 
 
 @pytest.fixture
-def not_cast_primitive_class_fixt():
-    @properties(filename="types_cast.yml", root="primitive", type_cast=False)
+def not_cast_primitive_class_fixt(request):
+    @properties(filename=request.param, root="primitive", type_cast=False)
     class NotCastPrimitiveClass(BaseClass):
         pass
 
@@ -21,8 +21,8 @@ def not_cast_primitive_class_fixt():
 
 
 @pytest.fixture
-def cast_primitive_class_fixt():
-    @properties(filename="types_cast.yml", root="primitive")
+def cast_primitive_class_fixt(request):
+    @properties(filename=request.param, root="primitive")
     class CastPrimitiveClass(BaseClass):
         pass
 
@@ -30,8 +30,8 @@ def cast_primitive_class_fixt():
 
 
 @pytest.fixture
-def fields_not_presented_fixt():
-    @properties(filename="types_cast.yml", root="primitive")
+def fields_not_presented_fixt(request):
+    @properties(filename=request.param, root="primitive")
     class DefaultFieldClass:
         default_int_var: int
         default_float_var: float
@@ -42,6 +42,11 @@ def fields_not_presented_fixt():
     return DefaultFieldClass
 
 
+@pytest.mark.parametrize(
+    "not_cast_primitive_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_not_cast_vars(not_cast_primitive_class_fixt):
     assert not_cast_primitive_class_fixt.int_var == "10"
     assert not_cast_primitive_class_fixt.float_var == "10.5"
@@ -50,6 +55,11 @@ def test_not_cast_vars(not_cast_primitive_class_fixt):
     assert not_cast_primitive_class_fixt.str_var == "str"
 
 
+@pytest.mark.parametrize(
+    "cast_primitive_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_cast_vars(cast_primitive_class_fixt):
     assert cast_primitive_class_fixt.int_var == 10
     assert cast_primitive_class_fixt.float_var == 10.5
@@ -58,6 +68,11 @@ def test_cast_vars(cast_primitive_class_fixt):
     assert cast_primitive_class_fixt.str_var == "str"
 
 
+@pytest.mark.parametrize(
+    "fields_not_presented_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_default_fields(fields_not_presented_fixt):
     assert fields_not_presented_fixt.default_none_var is None
     assert fields_not_presented_fixt.default_str_var == ""
@@ -66,15 +81,18 @@ def test_default_fields(fields_not_presented_fixt):
     assert fields_not_presented_fixt.default_float_var == 0.0
 
 
-def test_wrong_type_casting():
+@pytest.mark.parametrize(
+    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+)
+def test_wrong_type_casting(filename):
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="primitive")
+        @properties(filename=filename, root="primitive")
         class WrongIntClass:
             wrong_int_var: int
 
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="primitive")
+        @properties(filename=filename, root="primitive")
         class WrongFloatClass:
             wrong_float_var: float

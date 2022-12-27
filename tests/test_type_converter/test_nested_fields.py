@@ -33,14 +33,19 @@ class BaseClass:
 
 
 @pytest.fixture
-def nested_class_fixt():
-    @properties(filename="types_cast.yml", root="nested")
+def nested_class_fixt(request):
+    @properties(filename=request.param, root="nested")
     class NestedClass(BaseClass):
         pass
 
     return NestedClass
 
 
+@pytest.mark.parametrize(
+    "nested_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_fields_with_nested_types(nested_class_fixt):
     assert nested_class_fixt.list_with_int == [1, 2, 3]
     assert nested_class_fixt.typeddict_with_namedtuple == CustomDict(

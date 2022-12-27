@@ -19,14 +19,19 @@ class BaseClass:
 
 
 @pytest.fixture
-def base_class_fixt():
-    @properties(filename="types_cast.yml", root="base")
+def base_class_fixt(request):
+    @properties(filename=request.param, root="base")
     class Base(BaseClass):
         pass
 
     return Base
 
 
+@pytest.mark.parametrize(
+    "base_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_field_if_not_empty_in_config(base_class_fixt):
     assert base_class_fixt.dict_var == dict()
     assert base_class_fixt.tuple_var == tuple()

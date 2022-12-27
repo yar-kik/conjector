@@ -16,8 +16,8 @@ class CustomIntEnum(IntEnum):
 
 
 @pytest.fixture
-def enum_class_fixt():
-    @properties(filename="types_cast.yml", root="enum")
+def enum_class_fixt(request):
+    @properties(filename=request.param, root="enum")
     class EnumClass:
         simple_enum_var: SimpleEnum
         int_enum_var: CustomIntEnum
@@ -25,6 +25,11 @@ def enum_class_fixt():
     return EnumClass
 
 
+@pytest.mark.parametrize(
+    "enum_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_enum_field(enum_class_fixt):
     assert enum_class_fixt.simple_enum_var == SimpleEnum.GREEN
 
@@ -32,15 +37,18 @@ def test_enum_field(enum_class_fixt):
     assert enum_class_fixt.int_enum_var == 3
 
 
-def test_invalid_enum_field(enum_class_fixt):
+@pytest.mark.parametrize(
+    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+)
+def test_invalid_enum_field(filename):
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="enum")
+        @properties(filename=filename, root="enum")
         class InvalidFieldClass:
             invalid_enum_var: SimpleEnum
 
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="enum")
+        @properties(filename=filename, root="enum")
         class MissingFieldClass:
             missing_enum_var: SimpleEnum

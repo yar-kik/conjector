@@ -13,14 +13,19 @@ class BaseClass:
 
 
 @pytest.fixture
-def dict_class_fixt():
-    @properties(filename="types_cast.yml", root="dict")
+def dict_class_fixt(request):
+    @properties(filename=request.param, root="dict")
     class DictClass(BaseClass):
         pass
 
     return DictClass
 
 
+@pytest.mark.parametrize(
+    "dict_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
 def test_field_with_dict(dict_class_fixt):
     assert dict_class_fixt.simple_dict_var == {
         "int_var": 10,
@@ -31,9 +36,12 @@ def test_field_with_dict(dict_class_fixt):
     )
 
 
-def test_field_with_invalid_dict():
+@pytest.mark.parametrize(
+    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+)
+def test_field_with_invalid_dict(filename):
     with pytest.raises(ValueError):
 
-        @properties(filename="types_cast.yml", root="dict")
+        @properties(filename=filename, root="dict")
         class InvalidDictClass:
             wrong_dict_var: dict
