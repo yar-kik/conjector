@@ -20,7 +20,6 @@ setuptools.setup(
     url="https://github.com/yar-kik/conjector",
     license="MIT",
     packages=["app_properties"],
-    install_requires=["PyYAML>=6.0"],
     python_requires=">=3.8",
     classifiers=[
         "License :: OSI Approved :: MIT License",
@@ -28,4 +27,9 @@ setuptools.setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
+    extras_require={
+        "yaml": ["PyYAML>=6.0"],
+        "toml": ["toml>=0.10.0"],
+        "json": ["ujson>=5.0.0"],
+    },
 )

@@ -1,0 +1,4 @@
+list_var: ["a", "b", "c"]
+dict_var:
+  key: value
+int_var: 12
