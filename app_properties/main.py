@@ -18,6 +18,58 @@ from app_properties.type_converter import TypeConverter
 _T = TypeVar("_T")
 
 
+class Conjector:
+    def __init__(self) -> None:
+        self._type_converter = TypeConverter()
+        self._config_handler = ConfigHandler()
+
+    def inject_config(
+        self,
+        cls: Type[_T],
+        filename: str = "application.yml",
+        ignore_case: bool = True,
+        override_default: bool = False,
+        root: str = "",
+        type_cast: bool = True,
+        lazy_init: bool = False,
+    ) -> Type[_T]:
+        config = self._config_handler.get_config(
+            filename, ignore_case=ignore_case, root=root
+        )
+        lazy_properties: Dict[str, Any] = {}
+        setattr(
+            cls,
+            "init_props",
+            lambda obj=cls, override_init=True: self._init_props(
+                lazy_properties, obj, override_init=override_init
+            ),
+        )
+        for class_var, type_ in get_type_hints(cls).items():
+            value = config.get(class_var.lower() if ignore_case else class_var)
+            if type_cast:
+                value = self._type_converter.cast_types(type_, value)
+            lazy_properties[class_var] = value
+        if not lazy_init:
+            self._init_props(
+                lazy_properties, cls, override_init=override_default
+            )
+        return cls
+
+    @staticmethod
+    def _init_props(
+        lazy_properties: Dict[str, Any],
+        obj: Optional[_T] = None,
+        *,
+        override_init: bool = True,
+    ) -> None:
+        for field, value in lazy_properties.items():
+            if override_init and value:
+                setattr(obj, field, value)
+            else:
+                if getattr(obj, field, None) is None:
+                    setattr(obj, field, value)
+
+
 @overload
 def properties(
     cls: None = None,
@@ -80,32 +132,16 @@ def properties(
 
     @functools.wraps(cls)  # type: ignore
     def wrapper(cls_: Type[_T]) -> Type[_T]:
-        def init_props(
-            self: Optional[_T] = None, *, override_init: bool = True
-        ) -> None:
-            # if obj is None than method was called as classmethod
-            # else we work with instance object
-            obj = cls_ if self is None else self
-            for field, value in lazy_properties.items():
-                if override_init and value:
-                    setattr(obj, field, value)
-                else:
-                    if getattr(obj, field, None) is None:
-                        setattr(obj, field, value)
-
-        type_converter = TypeConverter()
-        config = ConfigHandler(filename).get_config(ignore_case, root)
-        annotated_class_vars = get_type_hints(cls_)
-        lazy_properties: Dict[str, Any] = {}
-        setattr(cls_, "init_props", init_props)
-        for class_var, type_ in annotated_class_vars.items():
-            value = config.get(class_var.lower() if ignore_case else class_var)
-            if type_cast:
-                value = type_converter.cast_types(type_, value)
-            lazy_properties[class_var] = value
-        if not lazy_init:
-            init_props(override_init=override_default)
-        return cls_
+        conjector = Conjector()
+        return conjector.inject_config(
+            cls_,
+            filename=filename,
+            ignore_case=ignore_case,
+            override_default=override_default,
+            root=root,
+            type_cast=type_cast,
+            lazy_init=lazy_init,
+        )
 
     if cls is None:
         return wrapper

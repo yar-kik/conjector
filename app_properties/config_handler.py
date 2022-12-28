@@ -2,10 +2,8 @@ from typing import Callable, Dict, TypeVar
 
 import functools
 import inspect
-import json
 import pathlib
-import toml
-import yaml
+import warnings
 from os.path import dirname, join, normpath, sep
 
 _K = TypeVar("_K")
@@ -14,24 +12,22 @@ _T = TypeVar("_T")
 
 
 class ConfigHandler:
-    def __init__(self, config_name: str) -> None:
-        self._conf_name = config_name
+    def __init__(self) -> None:
         self._caller_dir = self._get_caller_directory()
 
-    def get_config(self, ignore_case: bool, root: str) -> dict:
-        file = self._get_config_file()
+    def get_config(
+        self, filename: str, *, ignore_case: bool, root: str
+    ) -> dict:
+        file = self._get_config_file(filename)
         raw_config = self._resolve_config_format(file)
         return self._process_config(raw_config, ignore_case, root)
 
     def _get_caller_directory(self) -> str:
         stack = inspect.stack()
-        stack_depth = 3
-        # if used decorator without parens:
-        if stack[stack_depth].filename.split(sep)[-2:] == [
-            "app_properties",
-            "main.py",
-        ]:
-            stack_depth = 4
+        stack_depth = 0
+        for i, frame in enumerate(stack, 1):
+            if frame.filename.split(sep)[-2:] == ["app_properties", "main.py"]:
+                stack_depth = i
         return dirname(stack[stack_depth].filename)
 
     def _resolve_config_format(self, file: pathlib.Path) -> dict:
@@ -46,21 +42,40 @@ class ConfigHandler:
             raise NotImplementedError("Specified config type isn't supported!")
         return conf
 
-    def _get_config_file(self) -> pathlib.Path:
-        abs_config_path = join(self._caller_dir, normpath(self._conf_name))
+    def _get_config_file(self, filename: str) -> pathlib.Path:
+        abs_config_path = join(self._caller_dir, normpath(filename))
         file = pathlib.Path(abs_config_path)
         if not file.exists():
             raise FileNotFoundError(f"File '{file.name}' is not found!")
         return file
 
     def _get_yaml_config(self, text_content: str) -> dict:
+        try:
+            import yaml
+        except ImportError as e:
+            raise ImportError(
+                '"PyYAML" is not installed, run `pip install conjector[yaml]`'
+            ) from e
+
         # equivalent of yaml.safe_load() but faster
         return yaml.load(text_content, yaml.CSafeLoader)  # nosec
 
     def _get_json_config(self, text_content: str) -> dict:
+        try:
+            import ujson as json
+        except ImportError:
+            import json  # type: ignore
+
         return json.loads(text_content)
 
     def _get_toml_config(self, text_content: str) -> dict:
+        try:
+            import toml
+        except ImportError as e:
+            raise ImportError(
+                '"toml" is not installed, run `pip install conjector[toml]`'
+            ) from e
+
         return toml.loads(text_content)
 
     def _apply_to_key(
@@ -74,6 +89,12 @@ class ConfigHandler:
         config = self._apply_to_key(config, lambda x: str.replace(x, "-", "_"))
         if ignore_case:
             config = self._apply_to_key(config, str.lower)
+        else:
+            warnings.warn(
+                "Parameter `ignore_case` is deprecated. "
+                "It'll be removed in the future releases.",
+                DeprecationWarning,
+            )
         if root:
             config = functools.reduce(
                 lambda x, y: x[y], root.split("."), config

@@ -26,6 +26,15 @@ To install this library just enter:
 ```shell
 pip install conjector
 ```
+By default, `conjector` work only with the builtin `json` deserializer.
+To work with `yaml` or `toml` (if you are using `python <= 3.10`):
+```shell
+pip install conjector[yaml]
+# or
+pip install conjector[toml]
+# or faster version of json
+pip install conjector[json]
+```
 
 ## How to use
 For injecting values you need only the decorator `properties` under a target class.
