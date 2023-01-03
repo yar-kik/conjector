@@ -10,13 +10,5 @@ ignore =
     WPS305
     W503
 exclude =
-    tests/*
-
-[mypy]
-python_version = 3.8
-ignore_missing_imports = True
-follow_imports = skip
-check_untyped_defs = False
-disallow_untyped_defs = True
-strict_optional = True
-exclude = venv|tests
+    tests/*,
+    venv*

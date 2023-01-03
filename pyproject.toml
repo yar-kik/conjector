@@ -14,3 +14,18 @@ use_parentheses = true
 skip_gitignore = true
 skip_glob = ['venv']
 known_standard_library = ['typing']
+
+[tool.pytest.ini_options]
+norecursedirs = "venv"
+python_classes = "*Test Test*"
+filterwarnings = "ignore::UserWarning"
+log_cli=1
+
+[tool.mypy]
+python_version = 3.8
+ignore_missing_imports = true
+follow_imports = "skip"
+check_untyped_defs = false
+disallow_untyped_defs = true
+strict_optional = true
+exclude = ["venv", "tests"]
