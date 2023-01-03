@@ -3,8 +3,35 @@ from typing import Callable, Dict, TypeVar
 import functools
 import inspect
 import pathlib
+import sys
 import warnings
 from os.path import dirname, join, normpath, sep
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    tomllib = None  # type: ignore
+
+try:
+    import tomli
+except ImportError:
+    tomli = None
+
+try:
+    import toml
+except ImportError:
+    toml = None  # type: ignore
+
+try:
+    import ujson as json
+except ImportError:
+    import json  # type: ignore
+
+try:
+    import yaml
+except ImportError:
+    yaml = None  # type: ignore
+
 
 _K = TypeVar("_K")
 _V = TypeVar("_V")
@@ -50,33 +77,36 @@ class ConfigHandler:
         return file
 
     def _get_yaml_config(self, text_content: str) -> dict:
-        try:
-            import yaml
-        except ImportError as e:
+        if yaml is None:
             raise ImportError(
                 '"PyYAML" is not installed, run `pip install conjector[yaml]`'
-            ) from e
-
-        # equivalent of yaml.safe_load() but faster
-        return yaml.load(text_content, yaml.CSafeLoader)  # nosec
+            )
+        try:
+            SafeLoader = yaml.CSafeLoader
+        except AttributeError:
+            SafeLoader = yaml.SafeLoader  # type: ignore
+        # equivalent of yaml.safe_load() but could be faster with CSafeLoader
+        return yaml.load(text_content, SafeLoader)  # nosec
 
     def _get_json_config(self, text_content: str) -> dict:
-        try:
-            import ujson as json
-        except ImportError:
-            import json  # type: ignore
-
         return json.loads(text_content)
 
     def _get_toml_config(self, text_content: str) -> dict:
-        try:
-            import toml
-        except ImportError as e:
-            raise ImportError(
-                '"toml" is not installed, run `pip install conjector[toml]`'
-            ) from e
-
-        return toml.loads(text_content)
+        if tomllib is not None:
+            return tomllib.loads(text_content)
+        if tomli is not None:
+            return tomli.loads(text_content)
+        if toml is not None:
+            warnings.warn(
+                'Using "toml" library is deprecated. '
+                'It\'s recommended to use "tomli" instead.'
+                "To install run `pip install conjector[toml]`",
+                DeprecationWarning,
+            )
+            return toml.loads(text_content)
+        raise ImportError(
+            '"tomli" is not installed, run `pip install conjector[toml]`'
+        )
 
     def _apply_to_key(
         self, mapping: Dict[_K, _V], func: Callable[[_K], _T]
