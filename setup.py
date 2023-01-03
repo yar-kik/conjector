@@ -13,7 +13,7 @@ setuptools.setup(
     name="conjector",
     version=version,
     author="Yaroslav Kikvadze",
-    author_email="yaroslav.k@simporter.com",
+    author_email="yaroslav.kikvadze@gmail.com",
     description="Config injector for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -32,4 +32,5 @@ setuptools.setup(
         "toml": ["toml>=0.10.0"],
         "json": ["ujson>=5.0.0"],
     },
+    package_data={"app_properties": ["py.typed"]},
 )
