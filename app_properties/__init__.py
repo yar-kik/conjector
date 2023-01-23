@@ -8,4 +8,4 @@ warnings.warn(
     DeprecationWarning,
 )
 __all__ = ("properties", "Conjector")
-__version__ = "1.4.1"
+__version__ = "1.5.0"
