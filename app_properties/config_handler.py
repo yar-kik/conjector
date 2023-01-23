@@ -39,6 +39,8 @@ _T = TypeVar("_T")
 
 
 class ConfigHandler:
+    supported_configs = ("pyproject.toml",)
+
     def __init__(self) -> None:
         self._caller_dir = self._get_caller_directory()
 
@@ -48,6 +50,30 @@ class ConfigHandler:
         file = self._get_config_file(filename)
         raw_config = self._resolve_config_format(file)
         return self._process_config(raw_config, ignore_case, root)
+
+    def get_global_settings(self) -> dict:
+        project_root = self._get_project_root()
+        for config_type in self.supported_configs:
+            file = project_root / config_type
+            if not file.exists():
+                continue
+            try:
+                config = self._resolve_config_format(file)
+            except ImportError as e:
+                warnings.warn(
+                    f"{e} Ignoring global settings...", ImportWarning
+                )
+                config = {}
+            if config_type == "pyproject.toml":
+                config = config.get("tool", {}).get("conjector", {})
+            return config
+        return {}
+
+    def _get_project_root(self) -> pathlib.Path:
+        directory = pathlib.Path(self._caller_dir)
+        while (directory / "__init__.py").exists():
+            directory = directory.parent
+        return directory
 
     def _get_caller_directory(self) -> str:
         stack = inspect.stack()
