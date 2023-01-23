@@ -2,6 +2,7 @@ from typing import Callable, Dict, TypeVar
 
 import functools
 import inspect
+import json
 import pathlib
 import sys
 import warnings
@@ -23,9 +24,9 @@ except ImportError:
     toml = None  # type: ignore
 
 try:
-    import ujson as json
+    import ujson
 except ImportError:
-    import json  # type: ignore
+    ujson = None  # type: ignore
 
 try:
     import yaml
@@ -115,6 +116,14 @@ class ConfigHandler:
         return yaml.load(text_content, SafeLoader)  # nosec
 
     def _get_json_config(self, text_content: str) -> dict:
+        if ujson is not None:
+            return ujson.loads(text_content)
+        warnings.warn(
+            "Using built-in library for JSON parsing. "
+            "It's recommended to use another library for this purpose. "
+            "To install run `pip install conjector[json]`",
+            UserWarning,
+        )
         return json.loads(text_content)
 
     def _get_toml_config(self, text_content: str) -> dict:
@@ -125,7 +134,7 @@ class ConfigHandler:
         if toml is not None:
             warnings.warn(
                 'Using "toml" library is deprecated. '
-                'It\'s recommended to use "tomli" instead.'
+                'It\'s recommended to use "tomli" instead. '
                 "To install run `pip install conjector[toml]`",
                 DeprecationWarning,
             )

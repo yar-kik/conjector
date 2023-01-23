@@ -98,11 +98,23 @@ def test_toml_config_format_not_found_any_toml_parser():
                 pass
 
 
-def test_json_config_format_faster_version():
+def test_json_config_format_ujson_ok():
     @properties(filename="application.json")
-    class JsonConfigClass(BaseClass):
+    class UJsonConfigClass(BaseClass):
         pass
 
-    assert JsonConfigClass.list_var == ["a", "b", "c"]
-    assert JsonConfigClass.dict_var == {"key": "value"}
-    assert JsonConfigClass.int_var == 12
+    assert UJsonConfigClass.list_var == ["a", "b", "c"]
+    assert UJsonConfigClass.dict_var == {"key": "value"}
+    assert UJsonConfigClass.int_var == 12
+
+
+def test_json_config_format_default_parser():
+    with patch("app_properties.config_handler.ujson", None):
+
+        @properties(filename="application.json")
+        class JsonConfigClass(BaseClass):
+            pass
+
+        assert JsonConfigClass.list_var == ["a", "b", "c"]
+        assert JsonConfigClass.dict_var == {"key": "value"}
+        assert JsonConfigClass.int_var == 12
