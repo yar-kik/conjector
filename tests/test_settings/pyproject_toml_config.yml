@@ -1,0 +1,2 @@
+some_str_var: "global settings"
+some_default_int_var: 20

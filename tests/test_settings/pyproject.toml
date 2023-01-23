@@ -1,0 +1,3 @@
+[tool.conjector]
+filename = "pyproject_toml_config.yml"
+override_default = true

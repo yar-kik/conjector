@@ -13,6 +13,7 @@ from typing import (
 import functools
 
 from app_properties.config_handler import ConfigHandler
+from app_properties.dtos import Settings
 from app_properties.type_converter import TypeConverter
 
 _T = TypeVar("_T")
@@ -24,17 +25,15 @@ class Conjector:
         self._config_handler = ConfigHandler()
 
     def inject_config(
-        self,
-        cls: Type[_T],
-        filename: str = "application.yml",
-        ignore_case: bool = True,
-        override_default: bool = False,
-        root: str = "",
-        type_cast: bool = True,
-        lazy_init: bool = False,
+        self, cls: Type[_T], settings: Optional[Settings] = None
     ) -> Type[_T]:
+        global_settings = self._get_global_settings()
+        settings = settings if settings else Settings()
+        settings = global_settings | settings
         config = self._config_handler.get_config(
-            filename, ignore_case=ignore_case, root=root
+            settings.filename,
+            ignore_case=settings.ignore_case,
+            root=settings.root,
         )
         lazy_properties: Dict[str, Any] = {}
         setattr(
@@ -45,13 +44,15 @@ class Conjector:
             ),
         )
         for class_var, type_ in get_type_hints(cls).items():
-            value = config.get(class_var.lower() if ignore_case else class_var)
-            if type_cast:
+            value = config.get(
+                class_var.lower() if settings.ignore_case else class_var
+            )
+            if settings.type_cast:
                 value = self._type_converter.cast_types(type_, value)
             lazy_properties[class_var] = value
-        if not lazy_init:
+        if not settings.lazy_init:
             self._init_props(
-                lazy_properties, cls, override_init=override_default
+                lazy_properties, cls, override_init=settings.override_default
             )
         return cls
 
@@ -68,6 +69,16 @@ class Conjector:
             else:
                 if getattr(obj, field, None) is None:
                     setattr(obj, field, value)
+
+    def _get_global_settings(self) -> Settings:
+        cast_settings = {}
+        raw_settings = self._config_handler.get_global_settings()
+        for name, type_ in get_type_hints(Settings).items():
+            if name in raw_settings:
+                cast_settings[name] = self._type_converter.cast_types(
+                    type_, raw_settings[name]
+                )
+        return Settings(**cast_settings)
 
 
 @overload
@@ -135,12 +146,14 @@ def properties(
         conjector = Conjector()
         return conjector.inject_config(
             cls_,
-            filename=filename,
-            ignore_case=ignore_case,
-            override_default=override_default,
-            root=root,
-            type_cast=type_cast,
-            lazy_init=lazy_init,
+            settings=Settings(
+                filename=filename,
+                ignore_case=ignore_case,
+                override_default=override_default,
+                root=root,
+                type_cast=type_cast,
+                lazy_init=lazy_init,
+            ),
         )
 
     if cls is None:
