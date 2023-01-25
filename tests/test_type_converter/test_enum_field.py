@@ -27,7 +27,7 @@ def enum_class_fixt(request):
 
 @pytest.mark.parametrize(
     "enum_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_enum_field(enum_class_fixt):
@@ -38,7 +38,8 @@ def test_enum_field(enum_class_fixt):
 
 
 @pytest.mark.parametrize(
-    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+    "filename",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
 )
 def test_invalid_enum_field(filename):
     with pytest.raises(ValueError):

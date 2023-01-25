@@ -41,7 +41,7 @@ def class_with_missing_fixt(request):
 
 @pytest.mark.parametrize(
     "class_with_dataclasses_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_field_is_dataclass(class_with_dataclasses_fixt):
@@ -62,7 +62,7 @@ def test_field_is_dataclass(class_with_dataclasses_fixt):
 
 @pytest.mark.parametrize(
     "class_with_missing_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_missing_values_in_config(class_with_missing_fixt):

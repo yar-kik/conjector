@@ -21,7 +21,7 @@ def list_class_fixt(request):
 
 @pytest.mark.parametrize(
     "list_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_field_with_list(list_class_fixt):
