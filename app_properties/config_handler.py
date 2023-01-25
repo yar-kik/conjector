@@ -1,5 +1,6 @@
-from typing import Callable, Dict, TypeVar
+from typing import Any, Callable, Dict, List, TypeVar
 
+import configparser
 import functools
 import inspect
 import json
@@ -32,7 +33,6 @@ try:
     import yaml
 except ImportError:
     yaml = None  # type: ignore
-
 
 _K = TypeVar("_K")
 _V = TypeVar("_V")
@@ -92,6 +92,8 @@ class ConfigHandler:
             conf = self._get_json_config(text_content)
         elif file.suffix == ".toml":
             conf = self._get_toml_config(text_content)
+        elif file.suffix == ".ini":
+            conf = self._get_ini_config(text_content)
         else:
             raise NotImplementedError("Specified config type isn't supported!")
         return conf
@@ -142,6 +144,34 @@ class ConfigHandler:
         raise ImportError(
             '"tomli" is not installed, run `pip install conjector[toml]`'
         )
+
+    def _get_ini_config(self, text_content: str) -> dict:
+        parser = configparser.ConfigParser(strict=False)
+        parser.read_string(text_content)
+        parsed_result: Dict[str, Any] = {}
+        for section in parser.sections():
+            for key in parser[section]:
+                subsections = section.split(".") + [key]
+                self._set_nested_item(
+                    parsed_result, subsections, parser[section][key]
+                )
+        return parsed_result
+
+    def _set_nested_item(
+        self, mapping: dict, keys: List[str], value: str
+    ) -> None:
+        if keys[0].lower() == "root":
+            keys = keys[1:]
+        if keys[-1].endswith("[]"):
+            keys[-1] = keys[-1][:-2]
+            value = value.split(",")  # type: ignore
+        for i in range(1, len(keys) + 1):
+            pointer = mapping
+            for j in range(i):
+                if keys[j] in pointer:
+                    pointer = pointer[keys[j]]
+                else:
+                    pointer[keys[j]] = {} if i != len(keys) else value
 
     def _apply_to_key(
         self, mapping: Dict[_K, _V], func: Callable[[_K], _T]

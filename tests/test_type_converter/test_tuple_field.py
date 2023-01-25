@@ -27,7 +27,7 @@ def tuple_class_fixt(request):
 
 @pytest.mark.parametrize(
     "tuple_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_tuple_field_with_same_types(tuple_class_fixt):
@@ -38,7 +38,7 @@ def test_tuple_field_with_same_types(tuple_class_fixt):
 
 @pytest.mark.parametrize(
     "tuple_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_named_tuple_field_with_keyword_args(tuple_class_fixt):
@@ -48,7 +48,9 @@ def test_named_tuple_field_with_keyword_args(tuple_class_fixt):
 
 
 @pytest.mark.parametrize(
-    "tuple_class_fixt", ("types_cast.yml", "types_cast.json"), indirect=True
+    "tuple_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.ini"),
+    indirect=True,
 )
 def test_named_tuple_field_with_position_args(tuple_class_fixt):
     assert tuple_class_fixt.position_named_tuple_var == CustomTuple(
@@ -57,7 +59,9 @@ def test_named_tuple_field_with_position_args(tuple_class_fixt):
 
 
 @pytest.mark.parametrize(
-    "tuple_class_fixt", ("types_cast.yml", "types_cast.json"), indirect=True
+    "tuple_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.ini"),
+    indirect=True,
 )
 def test_tuple_field_mixed_types(tuple_class_fixt):
     assert tuple_class_fixt.int_str_float_tuple_var == (50, "60", 70.5)

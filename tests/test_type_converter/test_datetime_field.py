@@ -49,7 +49,7 @@ def timedelta_class_fixt(request):
 
 @pytest.mark.parametrize(
     "datetime_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_datetime_field(datetime_class_fixt):
@@ -69,7 +69,7 @@ def test_datetime_field(datetime_class_fixt):
 
 @pytest.mark.parametrize(
     "date_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_date_field(date_class_fixt):
@@ -86,7 +86,7 @@ def test_date_field(date_class_fixt):
 
 @pytest.mark.parametrize(
     "time_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_time_field(time_class_fixt):
@@ -103,7 +103,7 @@ def test_time_field(time_class_fixt):
 
 @pytest.mark.parametrize(
     "timedelta_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_timedelta_field(timedelta_class_fixt):
@@ -113,7 +113,8 @@ def test_timedelta_field(timedelta_class_fixt):
 
 
 @pytest.mark.parametrize(
-    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+    "filename",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
 )
 def test_wrong_datetime_value(filename):
     with pytest.raises(ValueError):

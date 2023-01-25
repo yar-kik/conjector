@@ -23,7 +23,7 @@ def boolean_class_fixt(request):
 
 @pytest.mark.parametrize(
     "boolean_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_cast_boolean_vars(boolean_class_fixt):

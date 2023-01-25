@@ -43,7 +43,7 @@ def nested_class_fixt(request):
 
 @pytest.mark.parametrize(
     "nested_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_fields_with_nested_types(nested_class_fixt):
