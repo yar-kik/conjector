@@ -1,3 +1,5 @@
+import pytest
+
 from app_properties import properties
 
 
@@ -6,41 +8,97 @@ class Base:
     int_var: int
 
 
-@properties(filename="nested_conf.yml")
-class ZeroRoot(Base):
-    pass
+@pytest.fixture
+def zero_root_fixt(request):
+    @properties(filename=request.param)
+    class ZeroRoot(Base):
+        pass
+
+    return ZeroRoot
 
 
-@properties(filename="nested_conf.yml", root="first")
-class FirstLevelRoot(Base):
-    pass
+@pytest.fixture
+def first_level_fixt(request):
+    @properties(filename=request.param, root="first")
+    class FirstLevelRoot(Base):
+        pass
+
+    return FirstLevelRoot
 
 
-@properties(filename="nested_conf.yml", root="second.first")
-class SecondLevelRoot(Base):
-    pass
+@pytest.fixture
+def second_level_fixt(request):
+    @properties(filename=request.param, root="second.first")
+    class SecondLevelRoot(Base):
+        pass
+
+    return SecondLevelRoot
 
 
-@properties(filename="nested_conf.yml", root="third.second.first")
-class ThirdLevelRoot(Base):
-    pass
+@pytest.fixture
+def third_level_fixt(request):
+    @properties(filename=request.param, root="third.second.first")
+    class ThirdLevelRoot(Base):
+        pass
+
+    return ThirdLevelRoot
 
 
-def test_default_root():
-    assert ZeroRoot.str_var == "root"
-    assert ZeroRoot.int_var == 0
+@pytest.mark.parametrize(
+    "zero_root_fixt",
+    (
+        "application.yml",
+        "application.json",
+        "application.toml",
+        "application.ini",
+    ),
+    indirect=True,
+)
+def test_default_root(zero_root_fixt):
+    assert zero_root_fixt.str_var == "root"
+    assert zero_root_fixt.int_var == 5
 
 
-def test_first_level_root():
-    assert FirstLevelRoot.str_var == "first"
-    assert FirstLevelRoot.int_var == 10
+@pytest.mark.parametrize(
+    "first_level_fixt",
+    (
+        "application.yml",
+        "application.json",
+        "application.toml",
+        "application.ini",
+    ),
+    indirect=True,
+)
+def test_first_level_root(first_level_fixt):
+    assert first_level_fixt.str_var == "first"
+    assert first_level_fixt.int_var == 10
 
 
-def test_second_level_root():
-    assert SecondLevelRoot.str_var == "second"
-    assert SecondLevelRoot.int_var == 20
+@pytest.mark.parametrize(
+    "second_level_fixt",
+    (
+        "application.yml",
+        "application.json",
+        "application.toml",
+        "application.ini",
+    ),
+    indirect=True,
+)
+def test_second_level_root(second_level_fixt):
+    assert second_level_fixt.str_var == "second"
+    assert second_level_fixt.int_var == 20
 
 
-def test_third_level_root():
-    assert ThirdLevelRoot.str_var == "third"
-    assert ThirdLevelRoot.int_var == 30
+@pytest.mark.parametrize(
+    "third_level_fixt",
+    (
+        "application.yml",
+        "application.json",
+        "application.toml",
+        "application.ini",
+    ),
+    indirect=True,
+)
+def test_third_level_root(third_level_fixt):
+    assert third_level_fixt.str_var == "third"
+    assert third_level_fixt.int_var == 30

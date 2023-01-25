@@ -18,7 +18,7 @@ def test_yaml_config_format_with_cloader():
 
     assert YamlConfigClass.list_var == ["a", "b", "c"]
     assert YamlConfigClass.dict_var == {"key": "value"}
-    assert YamlConfigClass.int_var == 12
+    assert YamlConfigClass.int_var == 5
 
 
 def test_yaml_config_format_with_pyloader():
@@ -31,7 +31,7 @@ def test_yaml_config_format_with_pyloader():
 
         assert YamlConfigClass.list_var == ["a", "b", "c"]
         assert YamlConfigClass.dict_var == {"key": "value"}
-        assert YamlConfigClass.int_var == 12
+        assert YamlConfigClass.int_var == 5
 
 
 def test_yaml_config_format_pyyaml_not_found():
@@ -54,7 +54,7 @@ def test_toml_config_format_tomllib_ok():
 
     assert TomlConfigClass.list_var == ["a", "b", "c"]
     assert TomlConfigClass.dict_var == {"key": "value"}
-    assert TomlConfigClass.int_var == 12
+    assert TomlConfigClass.int_var == 5
 
 
 @pytest.mark.skipif(
@@ -68,7 +68,7 @@ def test_toml_config_format_tomli_ok():
 
     assert TomlConfigClass.list_var == ["a", "b", "c"]
     assert TomlConfigClass.dict_var == {"key": "value"}
-    assert TomlConfigClass.int_var == 12
+    assert TomlConfigClass.int_var == 5
 
 
 @pytest.mark.skipif(
@@ -84,7 +84,7 @@ def test_toml_config_format_toml_ok():
 
         assert TomlConfigClass.list_var == ["a", "b", "c"]
         assert TomlConfigClass.dict_var == {"key": "value"}
-        assert TomlConfigClass.int_var == 12
+        assert TomlConfigClass.int_var == 5
 
 
 def test_toml_config_format_not_found_any_toml_parser():
@@ -105,7 +105,7 @@ def test_json_config_format_ujson_ok():
 
     assert UJsonConfigClass.list_var == ["a", "b", "c"]
     assert UJsonConfigClass.dict_var == {"key": "value"}
-    assert UJsonConfigClass.int_var == 12
+    assert UJsonConfigClass.int_var == 5
 
 
 def test_json_config_format_default_parser():
@@ -117,4 +117,14 @@ def test_json_config_format_default_parser():
 
         assert JsonConfigClass.list_var == ["a", "b", "c"]
         assert JsonConfigClass.dict_var == {"key": "value"}
-        assert JsonConfigClass.int_var == 12
+        assert JsonConfigClass.int_var == 5
+
+
+def test_ini_config_format_default_parser():
+    @properties(filename="application.ini")
+    class IniConfigClass(BaseClass):
+        pass
+
+    assert IniConfigClass.list_var == ["a", "b", "c"]
+    assert IniConfigClass.dict_var == {"key": "value"}
+    assert IniConfigClass.int_var == 5

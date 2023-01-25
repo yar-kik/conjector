@@ -33,7 +33,7 @@ def union_class_fixt(request):
 
 @pytest.mark.parametrize(
     "union_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_optional_field(union_class_fixt):
@@ -60,7 +60,9 @@ def test_union_field(union_class_fixt):
 
 
 @pytest.mark.parametrize(
-    "union_class_fixt", ("types_cast.yml", "types_cast.json"), indirect=True
+    "union_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.ini"),
+    indirect=True,
 )
 def test_mixed_union_field(union_class_fixt):
     assert union_class_fixt.list_optional_int_mixed == [20, None, 40]
@@ -68,7 +70,8 @@ def test_mixed_union_field(union_class_fixt):
 
 
 @pytest.mark.parametrize(
-    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+    "filename",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
 )
 def test_cannot_cast_to_any_type(filename):
     with pytest.raises(ValueError):

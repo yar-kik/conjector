@@ -1,5 +1,7 @@
 from typing import (
     Any,
+    Dict,
+    List,
     Optional,
     Tuple,
     Type,
@@ -15,7 +17,7 @@ import re
 from collections.abc import Iterable, Mapping
 from dataclasses import MISSING, Field, fields, is_dataclass
 from datetime import date, datetime, time, timedelta
-from enum import Enum
+from enum import Enum, IntEnum
 from itertools import zip_longest
 
 
@@ -25,6 +27,7 @@ class TypeConverter:
     def cast_types(self, type_: Union[type, Any], value: Any) -> Any:
         args = args if (args := get_args(type_)) else (Any,)
         type_ = origin if (origin := get_origin(type_)) else type_
+        value = value if value != "null" else None
         if (
             self._is_unspecified(type_)
             or self._is_terminate(type_, args)
@@ -110,7 +113,7 @@ class TypeConverter:
         if values is None:
             values = dict()
         if not isinstance(values, dict):
-            raise ValueError("Value isn't mapping!")
+            raise ValueError(f"Value '{values}' isn't mapping!")
         if not self._is_any(args):
             return {
                 self.cast_types(args[0], k): self.cast_types(args[1], v)
@@ -139,16 +142,21 @@ class TypeConverter:
     ) -> Any:
         if issubclass(type_, timedelta):
             if isinstance(values, Mapping):
+                values = self.cast_types(Dict[str, int], values)
                 return timedelta(**values)
             raise ValueError(f"Cannot cast value {values} to timedelta")
+        if issubclass(type_, datetime) and (
+            isinstance(values, (int, float)) or self._is_number(values)
+        ):
+            return datetime.utcfromtimestamp(float(values))
         if isinstance(values, str):
             return type_.fromisoformat(values)
         if isinstance(values, Mapping):
+            values = self.cast_types(Dict[str, int], values)
             return type_(**values)
         if isinstance(values, Iterable):
+            values = self.cast_types(List[int], values)
             return type_(*values)
-        if issubclass(type_, datetime) and isinstance(values, (int, float)):
-            return datetime.utcfromtimestamp(values)
         raise ValueError(f"Cannot cast value {values} to {type_.__name__}!")
 
     def _get_dataclass_default(self, field: Field) -> Any:
@@ -189,7 +197,18 @@ class TypeConverter:
         return re.compile(values)
 
     def _apply_enum(self, type_: Type[Enum], values: Any) -> Enum:
+        if issubclass(type_, IntEnum):
+            return type_(int(values))
         return type_(values)
+
+    def _is_number(self, num: Any) -> float:
+        if isinstance(num, (int, float)):
+            return True
+        try:
+            float(num)
+            return True
+        except (ValueError, TypeError):
+            return False
 
     def _is_terminate(self, type_: Any, args: tuple) -> bool:
         return (

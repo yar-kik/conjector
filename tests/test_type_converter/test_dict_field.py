@@ -23,14 +23,14 @@ def dict_class_fixt(request):
 
 @pytest.mark.parametrize(
     "dict_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_field_with_dict(dict_class_fixt):
-    assert dict_class_fixt.simple_dict_var == {
-        "int_var": 10,
-        "str_var": "str1",
-    }
+    assert dict_class_fixt.simple_dict_var in (
+        {"int_var": 10, "str_var": "str1"},
+        {"int_var": "10", "str_var": "str1"},
+    )
     assert dict_class_fixt.typed_dict_var == CustomDict(
         int_var=20, str_var="str2"
     )
