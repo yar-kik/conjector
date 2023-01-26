@@ -12,7 +12,7 @@
 
 ## What is this
 It is a simple library to inject non-sensitive configurations into class variables.
-Basically, it's like `BaseSettings` in `pydantic` library but for constants in `json`, `yaml` or `toml` formats.
+Basically, it's like `BaseSettings` in `pydantic` library but for constants in `json`, `yaml`, `toml` or `ini` formats.
 `conjector` can work with different Python types (like `tuple`, `datetime`, `dataclass` and so on) and recursively cast config values to them. 
 
 ## When to use
@@ -26,7 +26,7 @@ To install this library just enter:
 ```shell
 pip install conjector
 ```
-By default, `conjector` work only with the builtin `json` deserializer.
+By default, `conjector` work only with the builtin `json` and `ini` deserializers.
 To work with `yaml` or `toml` (if you are using `python <= 3.10`):
 ```shell
 pip install conjector[yaml]
@@ -154,6 +154,23 @@ class EmailService:
 class AuthService:
     key: str  # will store "another value"
 ```
+## Global `conjector` settings
+This library also supports global file settings (like `pytest` or `flake`). 
+So, you can override some parameters, which are passed to the decorator if default values aren't ok for you.
+For example, if you want to have the default config filename `my-app.toml` and 
+don't write every time `@properties(filename="my-app.toml")`, 
+just add the next lines in `pyproject.toml` in your project root:
+```toml
+[tool.conjector]
+filename = "my-app.toml"
+```
+And now you can use just bare decorator without parenthesis:
+```python
+@properties
+class MyClass:
+    ...
+```
+
 ## Different environments
 Using this library it's easy to manage different environments and corresponding config files.
 It could be done like so:
@@ -249,10 +266,46 @@ The table below shows how config values (`json` syntax example) are cast to Pyth
 | `enum.Enum`                                  | `str`<br/>`int`                       | `"VALUE"`<br/>`10`                                                                                                                                             |
 | `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
 
-___Warning:___ `toml` config format doesn't support heterogeneous types in an array, 
+___Warning #1:___ `toml` config format doesn't support heterogeneous types in an array, 
 like `["string", 10]`. So, using iterables with mixed types 
 (e.g. `list[str | int]` or `tuple[str, int]`) and corresponding type casting 
 aren't possible in this case.
 
+___Warning #2:___ `ini` config format doesn't support list with dicts or other lists, like `list[list[int]]` or `list[dict[str, Any]]`. 
+Only primitive types (`int`, `float`, `str`, `bool` and `null`) are available.  
+
+### About `ini` config
+By default, `configparser.ConfigParser` doesn't support lists and deep nested dicts, 
+but `conjector` makes it possible to work with them. How does it look?
+
+__Python code:__
+```python
+{
+    "some_key": {
+        "another_key": "value",
+        "deep_key": {
+            "key1": True,
+            "key2": None,
+        }
+    },
+    "just_key": 10,
+    "mixed_list": [10, "20", 30.5, None]
+}
+```
+__`.ini` config__
+```ini
+[some_key]
+another_key = "value"
+[some_key.deep_key]
+key1 = true
+key2 = null
+[root]
+just_key = 10
+mixed_list[] = 10,20,30.5,null
+```
+As you can see above, a list in a `.ini` config is coma-separated values where a key has a suffix `[]` in the end. 
+The dict nesting is also trivial, all you need is just dot-separated keys of nested dicts in `[section]` part.
+Also, you should remember that `configparser` can't work with variables without sections, so if you want to put
+some values in the root of a config just write a section `[root]` (or `[ROOT]`) above, like in the previous example.
 ## About contributing
 You will make `conjector` better if you open issues or create pull requests with improvements.
