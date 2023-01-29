@@ -40,7 +40,7 @@ _T = TypeVar("_T")
 
 
 class ConfigHandler:
-    supported_configs = ("pyproject.toml",)
+    supported_configs = ("pyproject.toml", "tox.ini")
 
     def __init__(self) -> None:
         self._caller_dir = self._get_caller_directory()
@@ -67,6 +67,8 @@ class ConfigHandler:
                 config = {}
             if config_type == "pyproject.toml":
                 config = config.get("tool", {}).get("conjector", {})
+            if config_type == "tox.ini":
+                config = config.get("conjector", {})
             return config
         return {}
 

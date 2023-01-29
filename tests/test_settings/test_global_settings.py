@@ -48,6 +48,10 @@ def test_decorator_params_override_global_settings(decorator_params_fixt):
                 filename="pyproject_toml_config.yml", override_default=True
             ),
         ),
+        (
+            ["tox.ini"],
+            Settings(filename="tox_ini_config.yml", override_default=True),
+        ),
     ],
 )
 def test_settings_file_format(config_formats, expected_config):
