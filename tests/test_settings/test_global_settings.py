@@ -13,9 +13,15 @@ class BaseClass:
 
 @pytest.fixture
 def default_params_fixt():
-    @properties
-    class DefaultParamsClass(BaseClass):
-        pass
+    with patch.object(
+        ConfigHandler,
+        "supported_config_mapping",
+        {"pyproject.toml": ("tool", "conjector")},
+    ):
+
+        @properties
+        class DefaultParamsClass(BaseClass):
+            pass
 
     return DefaultParamsClass
 
@@ -40,18 +46,28 @@ def test_decorator_params_override_global_settings(decorator_params_fixt):
 @pytest.mark.parametrize(
     "config_formats,expected_config",
     [
-        (["not_existing.cnfg"], Settings()),
-        ([], Settings()),
+        ({"not_existing.cnfg": ("conjector",)}, Settings()),
+        ({}, Settings()),
         (
-            ["pyproject.toml"],
+            {"pyproject.toml": ("tool", "conjector")},
             Settings(
                 filename="pyproject_toml_config.yml", override_default=True
             ),
         ),
+        (
+            {"tox.ini": ("conjector",)},
+            Settings(filename="tox_ini_config.yml", override_default=True),
+        ),
+        (
+            {"setup.cfg": ("tool:conjector",)},
+            Settings(filename="setup_cfg_config.yml", override_default=True),
+        ),
     ],
 )
 def test_settings_file_format(config_formats, expected_config):
-    with patch.object(ConfigHandler, "supported_configs", config_formats):
+    with patch.object(
+        ConfigHandler, "supported_config_mapping", config_formats
+    ):
         config_handler = Conjector()
         global_settings = config_handler._get_global_settings()
         assert global_settings == expected_config

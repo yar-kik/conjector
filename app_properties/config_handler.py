@@ -40,7 +40,11 @@ _T = TypeVar("_T")
 
 
 class ConfigHandler:
-    supported_configs = ("pyproject.toml",)
+    supported_config_mapping = {
+        "pyproject.toml": ("tool", "conjector"),
+        "tox.ini": ("conjector",),
+        "setup.cfg": ("tool:conjector",),
+    }
 
     def __init__(self) -> None:
         self._caller_dir = self._get_caller_directory()
@@ -54,7 +58,7 @@ class ConfigHandler:
 
     def get_global_settings(self) -> dict:
         project_root = self._get_project_root()
-        for config_type in self.supported_configs:
+        for config_type, sections in self.supported_config_mapping.items():
             file = project_root / config_type
             if not file.exists():
                 continue
@@ -65,8 +69,9 @@ class ConfigHandler:
                     f"{e} Ignoring global settings...", ImportWarning
                 )
                 config = {}
-            if config_type == "pyproject.toml":
-                config = config.get("tool", {}).get("conjector", {})
+            config = functools.reduce(
+                lambda x, y: x.get(y, {}), sections, config
+            )
             return config
         return {}
 
@@ -92,7 +97,7 @@ class ConfigHandler:
             conf = self._get_json_config(text_content)
         elif file.suffix == ".toml":
             conf = self._get_toml_config(text_content)
-        elif file.suffix == ".ini":
+        elif file.suffix in (".ini", ".cfg"):
             conf = self._get_ini_config(text_content)
         else:
             raise NotImplementedError("Specified config type isn't supported!")
