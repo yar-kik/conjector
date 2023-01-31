@@ -13,7 +13,7 @@ from typing import (
 import functools
 
 from app_properties.config_handler import ConfigHandler
-from app_properties.dtos import Settings
+from app_properties.dtos import DEFAULT, Settings
 from app_properties.type_converter import TypeConverter
 
 _T = TypeVar("_T")
@@ -112,12 +112,12 @@ def properties(
 def properties(
     cls: Optional[Type[_T]] = None,
     *,
-    filename: str = "application.yml",
-    ignore_case: bool = True,
-    override_default: bool = False,
-    root: str = "",
-    type_cast: bool = True,
-    lazy_init: bool = False,
+    filename: str = DEFAULT,
+    ignore_case: bool = DEFAULT,
+    override_default: bool = DEFAULT,
+    root: str = DEFAULT,
+    type_cast: bool = DEFAULT,
+    lazy_init: bool = DEFAULT,
 ) -> Union[Callable[[Type[_T]], Type[_T]], Type[_T]]:
     """
     Decorator to inject config file values into class variables and cast them
@@ -126,27 +126,27 @@ def properties(
     Parameters
     ----------
     cls:
-        class to inject constants. Passed implicit when decorator is used with
+        Class to inject constants. Passed implicit when decorator is used with
         or without parenthesis.
     filename:
-        name of file with constants. `yaml` and `json` formats are fully
+        Name of file with constants. `yaml` and `json` formats are fully
         supported. `toml` and `ini` are supported but with some limitations.
         Config file will be searched in the same directory where is file with
-        used decorator.
+        used decorator. Default value is **"application.yml"**
     ignore_case:
-        ignore case for field names or not.
+        Ignore case for field names or not. Default is **True**
     override_default:
-        override default class vars or stay as is.
+        Override default class vars or stay as is. Default is **False**
     root:
-        for nested config - field names separated with dots, like
-        `some.nested.key`.
+        For nested config - field names separated with dots, like
+        `some.nested.key`. Default is **""**
     type_cast:
-        apply type cast or stay as is.
+        Apply type cast or stay as is. Default is **True**
     lazy_init:
-        inject constants immediately or lazy. If lazy - method `init_props`
+        Inject constants immediately or lazy. If lazy - method `init_props`
         should be called when necessary. This method also accept boolean
         keyword param `override_init` to keep values of initialized class or
-        override them with config values.
+        override them with config values. Default value is **False**
 
 
     Returns
