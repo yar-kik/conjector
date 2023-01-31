@@ -1,4 +1,8 @@
+from typing import Any
+
 from dataclasses import dataclass, fields
+
+DEFAULT: Any = object()
 
 
 @dataclass
@@ -16,6 +20,6 @@ class Settings:
             other_val = getattr(other, field.name)
             self_val = getattr(self, field.name)
             merged_kwargs[field.name] = (
-                other_val if other_val != field.default else self_val
+                other_val if other_val is not DEFAULT else self_val
             )
         return Settings(**merged_kwargs)

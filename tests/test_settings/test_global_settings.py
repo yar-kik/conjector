@@ -28,19 +28,27 @@ def default_params_fixt():
 
 @pytest.fixture
 def decorator_params_fixt():
-    @properties(filename="decorator_config.yml")
-    class UserParamsClass(BaseClass):
-        pass
+    with patch.object(
+        ConfigHandler,
+        "supported_config_mapping",
+        {"pyproject.toml": ("tool", "conjector")},
+    ):
+
+        @properties(filename="decorator_config.yml", override_default=False)
+        class UserParamsClass(BaseClass):
+            pass
 
     return UserParamsClass
 
 
 def test_global_settings_override_default(default_params_fixt):
     assert default_params_fixt.some_str_var == "global settings"
+    assert default_params_fixt.some_default_int_var == 20
 
 
 def test_decorator_params_override_global_settings(decorator_params_fixt):
     assert decorator_params_fixt.some_str_var == "decorator params"
+    assert decorator_params_fixt.some_default_int_var == 10
 
 
 @pytest.mark.parametrize(
