@@ -170,6 +170,8 @@ And now you can use just bare decorator without parenthesis:
 class MyClass:
     ...
 ```
+Also, `conjector` can work with the `tox.ini` (`[conjector]` section) and `setup.cfg` (`[tool:conjector]` section) configuration formats, 
+so you must put your options under the appropriate sections.
 
 ## Different environments
 Using this library it's easy to manage different environments and corresponding config files.
@@ -265,7 +267,7 @@ The table below shows how config values (`json` syntax example) are cast to Pyth
 | `datetime.timedelta`                         | `dict`                                | `{"days": 1, "hours": 2, "minutes": 10}`                                                                                                                       |
 | `enum.Enum`                                  | `str`<br/>`int`                       | `"VALUE"`<br/>`10`                                                                                                                                             |
 | `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
-
+| `decimal.Decimal`                            | `str`<br/>`int`<br/>`float`           | `"12.150"`<br/>`100`<br/>`12.5`                                                                                                                                |
 ___Warning #1:___ `toml` config format doesn't support heterogeneous types in an array, 
 like `["string", 10]`. So, using iterables with mixed types 
 (e.g. `list[str | int]` or `tuple[str, int]`) and corresponding type casting 
