@@ -12,17 +12,26 @@ from typing import (
     get_type_hints,
 )
 
+import decimal
+import enum
 import inspect
 import re
 from collections.abc import Iterable, Mapping
 from dataclasses import MISSING, Field, fields, is_dataclass
 from datetime import date, datetime, time, timedelta
-from enum import Enum, IntEnum
 from itertools import zip_longest
 
 
 class TypeConverter:
-    _primitive_types = (str, int, float, bool, type(None), Enum)
+    _primitive_types = (
+        str,
+        int,
+        float,
+        bool,
+        type(None),
+        enum.Enum,
+        decimal.Decimal,
+    )
 
     def cast_types(self, type_: Union[type, Any], value: Any) -> Any:
         args = args if (args := get_args(type_)) else (Any,)
@@ -57,8 +66,10 @@ class TypeConverter:
             return self._cast_bool(value)
         if type_ == re.Pattern:
             return self._apply_regex_pattern(value)
-        if issubclass(type_, Enum):
+        if issubclass(type_, enum.Enum):
             return self._apply_enum(type_, value)
+        if issubclass(type_, decimal.Decimal):
+            return self._apply_decimal(value)
         if value is None:
             return type_()
         return type_(value)
@@ -196,12 +207,21 @@ class TypeConverter:
             raise ValueError("Regex pattern should be string!")
         return re.compile(values)
 
-    def _apply_enum(self, type_: Type[Enum], values: Any) -> Enum:
-        if issubclass(type_, IntEnum):
+    def _apply_enum(self, type_: Type[enum.Enum], values: Any) -> enum.Enum:
+        if issubclass(type_, enum.IntEnum):
             return type_(int(values))
         return type_(values)
 
-    def _is_number(self, num: Any) -> float:
+    def _apply_decimal(self, value: Any) -> decimal.Decimal:
+        if value is None:
+            return decimal.Decimal()
+        if self._is_number(value):
+            return decimal.Decimal(value)
+        raise ValueError(
+            "Decimal value should be int, float, str or 3-items list!"
+        )
+
+    def _is_number(self, num: Any) -> bool:
         if isinstance(num, (int, float)):
             return True
         try:

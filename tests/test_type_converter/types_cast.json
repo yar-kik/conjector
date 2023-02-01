@@ -272,5 +272,11 @@
   "regex": {
     "some_pattern_var": "\\w+",
     "wrong_pattern_var": 10
+  },
+  "decimal": {
+    "int_decimal_var": 10,
+    "float_decimal_var": 12.5,
+    "str_decimal_var": "15.150",
+    "general_invalid_decimal_var": {"invalid": "value"}
   }
 }
