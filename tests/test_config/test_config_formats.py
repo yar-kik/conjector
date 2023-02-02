@@ -2,7 +2,7 @@ import pytest
 import sys
 from unittest.mock import patch
 
-from app_properties import properties
+from conjector import properties
 
 
 class BaseClass:
@@ -35,7 +35,7 @@ def test_yaml_config_format_with_pyloader():
 
 
 def test_yaml_config_format_pyyaml_not_found():
-    with patch("app_properties.config_handler.yaml", None):
+    with patch("conjector.config_handler.yaml", None):
         with pytest.raises(ImportError):
 
             @properties(filename="application.yml")
@@ -71,26 +71,10 @@ def test_toml_config_format_tomli_ok():
     assert TomlConfigClass.int_var == 5
 
 
-@pytest.mark.skipif(
-    sys.version_info >= (3, 11),
-    reason="'tomllib' is available by default for python with version >= 3.11",
-)
-def test_toml_config_format_toml_ok():
-    with patch("app_properties.config_handler.tomli", None):
-
-        @properties(filename="application.toml")
-        class TomlConfigClass(BaseClass):
-            pass
-
-        assert TomlConfigClass.list_var == ["a", "b", "c"]
-        assert TomlConfigClass.dict_var == {"key": "value"}
-        assert TomlConfigClass.int_var == 5
-
-
 def test_toml_config_format_not_found_any_toml_parser():
-    with patch("app_properties.config_handler.tomllib", None), patch(
-        "app_properties.config_handler.tomli", None
-    ), patch("app_properties.config_handler.toml", None):
+    with patch("conjector.config_handler.tomllib", None), patch(
+        "conjector.config_handler.tomli", None
+    ):
         with pytest.raises(ImportError):
 
             @properties(filename="application.toml")
@@ -109,7 +93,7 @@ def test_json_config_format_ujson_ok():
 
 
 def test_json_config_format_default_parser():
-    with patch("app_properties.config_handler.ujson", None):
+    with patch("conjector.config_handler.ujson", None):
 
         @properties(filename="application.json")
         class JsonConfigClass(BaseClass):

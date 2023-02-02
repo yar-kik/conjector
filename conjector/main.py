@@ -12,9 +12,9 @@ from typing import (
 
 import functools
 
-from app_properties.config_handler import ConfigHandler
-from app_properties.dtos import DEFAULT, Settings
-from app_properties.type_converter import TypeConverter
+from conjector.config_handler import ConfigHandler
+from conjector.dtos import DEFAULT, Settings
+from conjector.type_converter import TypeConverter
 
 _T = TypeVar("_T")
 

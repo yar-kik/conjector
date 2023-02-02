@@ -2,7 +2,7 @@ import pytest
 import re
 from re import Pattern
 
-from app_properties import properties
+from conjector import properties
 
 
 @pytest.fixture

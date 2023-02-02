@@ -1,7 +1,7 @@
 import pytest
 from decimal import Decimal
 
-from app_properties import properties
+from conjector import properties
 
 
 @pytest.fixture

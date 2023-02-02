@@ -2,7 +2,7 @@ import io
 import re
 import setuptools
 
-with io.open("app_properties/__init__.py", encoding="utf-8") as f:
+with io.open("conjector/__init__.py", encoding="utf-8") as f:
     regex_result = re.search(r"__version__ = \"(.+)\"", f.read())
     version = regex_result.group(1) if regex_result else "0.1.0"
 
@@ -19,7 +19,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/yar-kik/conjector",
     license="MIT",
-    packages=["app_properties"],
+    packages=["conjector"],
     python_requires=">=3.8",
     classifiers=[
         "License :: OSI Approved :: MIT License",
@@ -30,8 +30,8 @@ setuptools.setup(
     ],
     extras_require={
         "yaml": ["PyYAML>=6.0"],
-        "toml": ["toml>=0.10.0"],
+        "toml": ["tomli>=1.2.0"],
         "json": ["ujson>=5.0.0"],
     },
-    package_data={"app_properties": ["py.typed"]},
+    package_data={"conjector": ["py.typed"]},
 )

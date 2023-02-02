@@ -2,7 +2,7 @@ from typing import Any, Dict, TypedDict
 
 import pytest
 
-from app_properties import properties
+from conjector import properties
 
 CustomDict = TypedDict("CustomDict", {"int_var": int, "str_var": str})
 

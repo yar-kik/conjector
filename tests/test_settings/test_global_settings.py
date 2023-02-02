@@ -1,9 +1,9 @@
 import pytest
 from unittest.mock import patch
 
-from app_properties import Conjector, properties
-from app_properties.config_handler import ConfigHandler
-from app_properties.dtos import Settings
+from conjector import Conjector, properties
+from conjector.config_handler import ConfigHandler
+from conjector.dtos import Settings
 
 
 class BaseClass:

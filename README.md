@@ -75,11 +75,13 @@ mailing_frequency:
   hours: 12
 ```
 `services/email_message_service.py`:
+
 ```python
 from typing import TypedDict
 from dataclasses import dataclass
 from datetime import timedelta
-from app_properties import properties
+from conjector import properties
+
 
 @dataclass
 class TextStyle:
@@ -88,9 +90,11 @@ class TextStyle:
     font: str
     color: tuple[int, int, int] | str
 
+
 class GreetingDict(TypedDict):
     language: str
     text: str
+
 
 @properties
 class EmailMessageService:
@@ -98,7 +102,7 @@ class EmailMessageService:
     language_greetings: list[GreetingDict]
     wellcome_message: str
     mailing_frequency: timedelta | None
-    
+
     # And using these class variables in some methods...
 ```
 
@@ -142,8 +146,10 @@ clients:
 
 # and so on...
 ```
+
 ```python
-from app_properties import properties
+from conjector import properties
+
 
 @properties(filename="example.yml", root="services.email_service")
 class EmailService:
@@ -179,7 +185,7 @@ It could be done like so:
 
 ```python
 import os
-from app_properties import properties
+from conjector import properties
 
 
 @properties(filename=os.getenv("CONFIG_FILENAME", "application.yml"))
@@ -268,6 +274,7 @@ The table below shows how config values (`json` syntax example) are cast to Pyth
 | `enum.Enum`                                  | `str`<br/>`int`                       | `"VALUE"`<br/>`10`                                                                                                                                             |
 | `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
 | `decimal.Decimal`                            | `str`<br/>`int`<br/>`float`           | `"12.150"`<br/>`100`<br/>`12.5`                                                                                                                                |
+
 ___Warning #1:___ `toml` config format doesn't support heterogeneous types in an array, 
 like `["string", 10]`. So, using iterables with mixed types 
 (e.g. `list[str | int]` or `tuple[str, int]`) and corresponding type casting 

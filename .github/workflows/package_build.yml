@@ -24,19 +24,19 @@ jobs:
 
       - name: Run flake8
         run: |
-          python -m flake8 app_properties/
+          python -m flake8 conjector/
       - name: Run black
         run: |
-          python -m black --line-length 79 --check app_properties/
+          python -m black --line-length 79 --check conjector/
       - name: Run mypy
         run: |
-          python -m mypy app_properties/
+          python -m mypy conjector/
       - name: Run bandit
         run: |
-          python -m bandit app_properties/ -r
+          python -m bandit conjector/ -r
       - name: Run tests
         run: |
-          python -m coverage run --source=app_properties -m pytest
+          python -m coverage run --source=conjector -m pytest
           python -m coverage lcov --fail-under=80
       - name: Send results to coveralls
         uses: coverallsapp/github-action@1.1.3

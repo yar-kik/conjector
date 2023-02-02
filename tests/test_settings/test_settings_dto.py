@@ -1,4 +1,4 @@
-from app_properties.dtos import DEFAULT, Settings
+from conjector.dtos import DEFAULT, Settings
 
 
 def test_merge_user_params_with_custom_settings():

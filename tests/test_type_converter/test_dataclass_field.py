@@ -3,7 +3,7 @@ from typing import List
 import pytest
 from dataclasses import dataclass, field
 
-from app_properties import properties
+from conjector import properties
 
 
 @dataclass

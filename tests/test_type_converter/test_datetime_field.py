@@ -1,7 +1,7 @@
 import datetime
 import pytest
 
-from app_properties import properties
+from conjector import properties
 
 
 @pytest.fixture
