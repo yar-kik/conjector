@@ -2,7 +2,7 @@ from typing import NamedTuple, Tuple
 
 import pytest
 
-from app_properties import properties
+from conjector import properties
 
 CustomTuple = NamedTuple("CustomTuple", [("int_var", int), ("str_var", str)])
 

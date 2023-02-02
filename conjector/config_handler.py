@@ -20,11 +20,6 @@ except ImportError:
     tomli = None
 
 try:
-    import toml
-except ImportError:
-    toml = None  # type: ignore
-
-try:
     import ujson
 except ImportError:
     ujson = None  # type: ignore
@@ -85,7 +80,7 @@ class ConfigHandler:
         stack = inspect.stack()
         stack_depth = 0
         for i, frame in enumerate(stack, 1):
-            if frame.filename.split(sep)[-2:] == ["app_properties", "main.py"]:
+            if frame.filename.split(sep)[-2:] == ["conjector", "main.py"]:
                 stack_depth = i
         return dirname(stack[stack_depth].filename)
 
@@ -138,14 +133,6 @@ class ConfigHandler:
             return tomllib.loads(text_content)
         if tomli is not None:
             return tomli.loads(text_content)
-        if toml is not None:
-            warnings.warn(
-                'Using "toml" library is deprecated. '
-                'It\'s recommended to use "tomli" instead. '
-                "To install run `pip install conjector[toml]`",
-                DeprecationWarning,
-            )
-            return toml.loads(text_content)
         raise ImportError(
             '"tomli" is not installed, run `pip install conjector[toml]`'
         )

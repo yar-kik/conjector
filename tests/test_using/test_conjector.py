@@ -2,7 +2,7 @@ from typing import Dict, List
 
 import pytest
 
-from app_properties.main import Conjector, properties
+from conjector.main import Conjector, properties
 
 
 @pytest.fixture

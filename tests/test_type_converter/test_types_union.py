@@ -2,7 +2,7 @@ from typing import List, Optional, Union
 
 import pytest
 
-from app_properties import properties
+from conjector import properties
 
 
 class BaseClass:

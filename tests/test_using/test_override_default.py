@@ -1,4 +1,4 @@
-from app_properties import properties
+from conjector import properties
 
 
 class DefaultVar:

@@ -1,7 +1,7 @@
 import pytest
 from enum import Enum, IntEnum
 
-from app_properties import properties
+from conjector import properties
 
 
 class SimpleEnum(Enum):

@@ -2,7 +2,7 @@ from typing import FrozenSet, Set
 
 import pytest
 
-from app_properties import properties
+from conjector import properties
 
 
 class BaseClass:
