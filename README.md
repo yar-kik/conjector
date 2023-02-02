@@ -2,7 +2,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/conjector)](https://pypi.org/project/conjector/)
 [![PyPI - Package Version](https://img.shields.io/pypi/v/conjector)](https://pypi.org/project/conjector/)
 [![PyPI - License](https://img.shields.io/pypi/l/conjector)](https://pypi.org/project/conjector/)
-[![Build Status](https://app.travis-ci.com/yar-kik/conjector.svg?branch=master)](https://app.travis-ci.com/yar-kik/conjector)
+[![Build](https://github.com/yar-kik/conjector/actions/workflows/package_build.yml/badge.svg?branch=master)](https://github.com/yar-kik/conjector/actions/workflows/package_build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/yar-kik/conjector/badge.svg?branch=master)](https://coveralls.io/github/yar-kik/conjector?branch=master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
