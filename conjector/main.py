@@ -31,9 +31,7 @@ class Conjector:
         settings = settings if settings else Settings()
         settings = global_settings | settings
         config = self._config_handler.get_config(
-            settings.filename,
-            ignore_case=settings.ignore_case,
-            root=settings.root,
+            settings.filename, root=settings.root
         )
         lazy_properties: Dict[str, Any] = {}
         setattr(
@@ -44,9 +42,7 @@ class Conjector:
             ),
         )
         for class_var, type_ in get_type_hints(cls).items():
-            value = config.get(
-                class_var.lower() if settings.ignore_case else class_var
-            )
+            value = config.get(class_var)
             if settings.type_cast:
                 value = self._type_converter.cast_types(type_, value)
             lazy_properties[class_var] = value
@@ -86,7 +82,6 @@ def properties(
     cls: None = None,
     *,
     filename: str = ...,
-    ignore_case: bool = ...,
     override_default: bool = ...,
     root: str = ...,
     type_cast: bool = ...,
@@ -100,7 +95,6 @@ def properties(
     cls: Type[_T],
     *,
     filename: str = ...,
-    ignore_case: bool = ...,
     override_default: bool = ...,
     root: str = ...,
     type_cast: bool = ...,
@@ -113,7 +107,6 @@ def properties(
     cls: Optional[Type[_T]] = None,
     *,
     filename: str = DEFAULT,
-    ignore_case: bool = DEFAULT,
     override_default: bool = DEFAULT,
     root: str = DEFAULT,
     type_cast: bool = DEFAULT,
@@ -133,8 +126,6 @@ def properties(
         supported. `toml` and `ini` are supported but with some limitations.
         Config file will be searched in the same directory where is file with
         used decorator. Default value is **"application.yml"**
-    ignore_case:
-        Ignore case for field names or not. Default is **True**
     override_default:
         Override default class vars or stay as is. Default is **False**
     root:
@@ -162,7 +153,6 @@ def properties(
             cls_,
             settings=Settings(
                 filename=filename,
-                ignore_case=ignore_case,
                 override_default=override_default,
                 root=root,
                 type_cast=type_cast,

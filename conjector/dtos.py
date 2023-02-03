@@ -8,7 +8,6 @@ DEFAULT: Any = object()
 @dataclass
 class Settings:
     filename: str = "application.yml"
-    ignore_case: bool = True
     override_default: bool = False
     root: str = ""
     type_cast: bool = True
