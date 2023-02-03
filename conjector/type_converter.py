@@ -33,7 +33,7 @@ class TypeConverter:
         decimal.Decimal,
     )
 
-    def cast_types(self, type_: Union[type, Any], value: Any) -> Any:
+    def cast_types(self, type_: Type, value: Any) -> Any:
         args = args if (args := get_args(type_)) else (Any,)
         type_ = origin if (origin := get_origin(type_)) else type_
         value = value if value != "null" else None
@@ -84,19 +84,21 @@ class TypeConverter:
             return False
         return None
 
-    def _apply_list(self, args: Tuple[type, ...], values: Any) -> list:
+    def _apply_list(self, args: Tuple[Type[list], ...], values: Any) -> list:
         if values is None:
             values = list()
         return [self.cast_types(args[0], i) for i in values]
 
     def _apply_set(
-        self, type_: type, args: Tuple[type, ...], values: Any
+        self, type_: type, args: Tuple[Type[set], ...], values: Any
     ) -> set:
         if values is None:
             values = set()
         return type_(self.cast_types(args[0], i) for i in values)
 
-    def _apply_tuple(self, type_: type, args: Any, values: Any) -> tuple:
+    def _apply_tuple(
+        self, type_: Type[tuple], args: Any, values: Any
+    ) -> tuple:
         if values is None:
             values = tuple()
         if not get_type_hints(type_):
@@ -120,7 +122,7 @@ class TypeConverter:
             return type_(*cast_values)
         raise ValueError("NamedTuple values should be iterable or mapping!")
 
-    def _apply_dict(self, type_: type, args: tuple, values: Any) -> dict:
+    def _apply_dict(self, type_: Type[dict], args: tuple, values: Any) -> dict:
         if values is None:
             values = dict()
         if not isinstance(values, dict):
@@ -150,7 +152,7 @@ class TypeConverter:
 
     def _apply_datetime(
         self, type_: Type[Union[datetime, date, time, timedelta]], values: Any
-    ) -> Any:
+    ) -> Union[datetime, date, time, timedelta]:
         if issubclass(type_, timedelta):
             if isinstance(values, Mapping):
                 values = self.cast_types(Dict[str, int], values)
