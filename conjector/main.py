@@ -27,9 +27,7 @@ class Conjector:
     def inject_config(
         self, cls: Type[_T], settings: Optional[Settings] = None
     ) -> Type[_T]:
-        global_settings = self._get_global_settings()
-        settings = settings if settings else Settings()
-        settings = global_settings | settings
+        settings = self._get_merged_settings(settings)
         config = self._config_handler.get_config(
             settings.filename, root=settings.root
         )
@@ -75,6 +73,13 @@ class Conjector:
                     type_, raw_settings[name]
                 )
         return Settings(**cast_settings)
+
+    def _get_merged_settings(
+        self, user_params: Optional[Settings]
+    ) -> Settings:
+        global_settings = self._get_global_settings()
+        settings = user_params if user_params else Settings()
+        return global_settings | settings
 
 
 @overload
