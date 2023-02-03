@@ -49,7 +49,7 @@ def test_named_tuple_field_with_keyword_args(tuple_class_fixt):
 
 @pytest.mark.parametrize(
     "tuple_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.ini"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_named_tuple_field_with_position_args(tuple_class_fixt):
@@ -60,7 +60,7 @@ def test_named_tuple_field_with_position_args(tuple_class_fixt):
 
 @pytest.mark.parametrize(
     "tuple_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.ini"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_tuple_field_mixed_types(tuple_class_fixt):

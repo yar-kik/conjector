@@ -198,7 +198,7 @@ class TypeConverter:
         for arg in args:
             try:
                 return self.cast_types(arg, value)
-            except ValueError:
+            except (ValueError, TypeError):
                 continue
         if is_optional:
             return None
