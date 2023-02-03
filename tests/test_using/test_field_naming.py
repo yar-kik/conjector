@@ -11,7 +11,7 @@ class BaseCase:
 
 @pytest.fixture
 def case_sensitive_fixt():
-    @properties(filename="application.yml", ignore_case=False)
+    @properties(filename="application.yml")
     class CaseSensitive(BaseCase):
         pass
 
@@ -42,12 +42,6 @@ def test_case_sensitive_fields(case_sensitive_fixt):
     assert case_sensitive_fixt.camelCase == "camelCase"
     assert case_sensitive_fixt.snake_case == "snake_case"
     assert case_sensitive_fixt.PascalCase == "PascalCase"
-
-
-def test_case_insensitive_fields(case_insensitive_fixt):
-    assert case_insensitive_fixt.camelCase == "camelcase"
-    assert case_insensitive_fixt.snake_case == "snake_case"
-    assert case_insensitive_fixt.PascalCase == "pascalcase"
 
 
 def test_properties_with_hyphens(class_var_with_hyphen_fixt):

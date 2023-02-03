@@ -44,12 +44,10 @@ class ConfigHandler:
     def __init__(self) -> None:
         self._caller_dir = self._get_caller_directory()
 
-    def get_config(
-        self, filename: str, *, ignore_case: bool, root: str
-    ) -> dict:
+    def get_config(self, filename: str, *, root: str) -> dict:
         file = self._get_config_file(filename)
         raw_config = self._resolve_config_format(file)
-        return self._process_config(raw_config, ignore_case, root)
+        return self._process_config(raw_config, root)
 
     def get_global_settings(self) -> dict:
         project_root = self._get_project_root()
@@ -170,18 +168,8 @@ class ConfigHandler:
     ) -> Dict[_T, _V]:
         return {func(k): mapping[k] for k in mapping}
 
-    def _process_config(
-        self, config: dict, ignore_case: bool, root: str
-    ) -> dict:
+    def _process_config(self, config: dict, root: str) -> dict:
         config = self._apply_to_key(config, lambda x: str.replace(x, "-", "_"))
-        if ignore_case:
-            config = self._apply_to_key(config, str.lower)
-        else:
-            warnings.warn(
-                "Parameter `ignore_case` is deprecated. "
-                "It'll be removed in the future releases.",
-                DeprecationWarning,
-            )
         if root:
             config = functools.reduce(
                 lambda x, y: x[y], root.split("."), config
