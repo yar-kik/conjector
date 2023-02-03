@@ -275,12 +275,7 @@ The table below shows how config values (`json` syntax example) are cast to Pyth
 | `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
 | `decimal.Decimal`                            | `str`<br/>`int`<br/>`float`           | `"12.150"`<br/>`100`<br/>`12.5`                                                                                                                                |
 
-___Warning #1:___ `toml` config format doesn't support heterogeneous types in an array, 
-like `["string", 10]`. So, using iterables with mixed types 
-(e.g. `list[str | int]` or `tuple[str, int]`) and corresponding type casting 
-aren't possible in this case.
-
-___Warning #2:___ `ini` config format doesn't support list with dicts or other lists, like `list[list[int]]` or `list[dict[str, Any]]`. 
+___Warning:___ `ini` config format doesn't support list with dicts or other lists, like `list[list[int]]` or `list[dict[str, Any]]`. 
 Only primitive types (`int`, `float`, `str`, `bool` and `null`) are available.  
 
 ### About `ini` config

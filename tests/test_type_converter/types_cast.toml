@@ -11,10 +11,15 @@ int_with_ellipsis_tuple_var = [10, 15]
 wrong_tuple_var = 42
 single_int_tuple_var = [40]
 unspecified_tuple_var = ["12", "14"]
+int_str_float_tuple_var = [50, "60", 70.5]
 
 [tuple.keyword_named_tuple_var]
 str_var = "str2"
 int_var = 20
+
+[tuple.position_named_tuple_var]
+int_var=30
+str_var="str3"
 
 [dict]
 wrong_dict_var = ["val1", "val2"]
@@ -85,11 +90,11 @@ union_float_int_str = 10.5
 union_int_float_str = 10.5
 union_str_int_float = 10.5
 wrong_union_dict_list = "wrong_value"
+list_optional_int_mixed = [20, "", 40]
+list_union_int_str_mixed = [50, "str", "str2", 60]
+union_dict_list_presented_list = [{key = "value"}]
 
 [union.union_dict_list_presented_dict]
-key = "value"
-
-[[union.union_dict_list_presented_list]]
 key = "value"
 
 [datetime]

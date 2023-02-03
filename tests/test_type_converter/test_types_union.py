@@ -61,7 +61,7 @@ def test_union_field(union_class_fixt):
 
 @pytest.mark.parametrize(
     "union_class_fixt",
-    ("types_cast.yml", "types_cast.json", "types_cast.ini"),
+    ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
     indirect=True,
 )
 def test_mixed_union_field(union_class_fixt):
