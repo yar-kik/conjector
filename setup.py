@@ -32,6 +32,7 @@ setuptools.setup(
         "yaml": ["PyYAML>=6.0"],
         "toml": ["tomli>=1.2.0"],
         "json": ["ujson>=5.0.0"],
+        "all": ["PyYAML>=6.0", "tomli>=1.2.0", "ujson>=5.0.0"],
     },
     package_data={"conjector": ["py.typed"]},
 )
