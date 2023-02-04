@@ -1,0 +1,19 @@
+default_text_style:
+  size: 14
+  weight: bold
+  font: "Times New Roman"
+  color:
+    - 128
+    - 128
+    - 128
+language_greetings:
+  - language: english
+    text: hello
+  - language: german
+    text: hallo
+  - language: french
+    text: bonjour
+wellcome_message: "{greeting}! Thank you for registration, {username}!"
+mailing_frequency:
+  days: 5
+  hours: 12

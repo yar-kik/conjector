@@ -2,6 +2,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/conjector)](https://pypi.org/project/conjector/)
 [![PyPI - Package Version](https://img.shields.io/pypi/v/conjector)](https://pypi.org/project/conjector/)
 [![PyPI - License](https://img.shields.io/pypi/l/conjector)](https://pypi.org/project/conjector/)
+[![Documentation Status](https://readthedocs.org/projects/conjector/badge/?version=latest)](https://conjector.readthedocs.io/en/latest/?badge=latest)
 [![Build](https://github.com/yar-kik/conjector/actions/workflows/package_build.yml/badge.svg?branch=master)](https://github.com/yar-kik/conjector/actions/workflows/package_build.yml)
 [![Coverage Status](https://coveralls.io/repos/github/yar-kik/conjector/badge.svg?branch=master)](https://coveralls.io/github/yar-kik/conjector?branch=master)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -13,7 +14,9 @@
 ## What is this
 It is a simple library to inject non-sensitive configurations into class variables.
 Basically, it's like `BaseSettings` in `pydantic` library but for constants in `json`, `yaml`, `toml` or `ini` formats.
-`conjector` can work with different Python types (like `tuple`, `datetime`, `dataclass` and so on) and recursively cast config values to them. 
+`conjector` can work with different Python types (like `tuple`, `datetime`, `dataclass` and so on) and recursively cast config values to them.
+
+More information about the library and all features you can find in the official [documentation](https://conjector.readthedocs.io/en/latest/).
 
 ## When to use
 * If you deal with constants in your code, like error messages, default values for something, numeric coefficients, and so on.
@@ -124,60 +127,7 @@ class EmailMessageService:
 ```
 
 All config values will be inserted and cast according to the type annotations once during the application or script start.
-Additionally, the decorator takes such params:
-* `filename` - the name of a file with config. By default, it is `application.yml`. Use a relative path with `../` to read the file from a parent directory;
-* `type_cast` - used to know whether you want to cast config values to the field type. 
-By default, it's `True`, which means values in a config file will be cast according to the type hints. All types specified in the section `supported types` will be available for type casting. Also, nested types will be recursively cast.
-If `False`, type hinting is ignored, and available types are limited by a file format;
-* `override_default` - used to know whether you want to override the default values of class variables. By default, it is `False`;
-* `lazy_init` - used to know whether you want to set config values immediately on the application start-up or on demand ("lazily") after calling the method `init_props()`. By default, it is `False`;
-* `root` - root key in the config. It's the way to create "namespaces" when you work with multiple classes but use a single config file. It could be a nested value with separation by dots, for example:
-```yaml
-# example.yml
-services:
-  email_service:
-    key: some value
-  auth_service:
-    key: another value
 
-clients:
-  translation_client:
-    key: value
-
-# and so on...
-```
-
-```python
-from conjector import properties
-
-
-@properties(filename="example.yml", root="services.email_service")
-class EmailService:
-    key: str  # will store "some value"
-
-
-@properties(filename="example.yml", root="services.auth_service")
-class AuthService:
-    key: str  # will store "another value"
-```
-## Global `conjector` settings
-This library also supports global file settings (like `pytest` or `flake`). 
-So, you can override some parameters, which are passed to the decorator if default values aren't ok for you.
-For example, if you want to have the default config filename `my-app.toml` and 
-don't write every time `@properties(filename="my-app.toml")`, 
-just add the next lines in `pyproject.toml` in your project root:
-```toml
-[tool.conjector]
-filename = "my-app.toml"
-```
-And now you can use just bare decorator without parenthesis:
-```python
-@properties
-class MyClass:
-    ...
-```
-Also, `conjector` can work with the `tox.ini` (`[conjector]` section) and `setup.cfg` (`[tool:conjector]` section) configuration formats, 
-so you must put your options under the appropriate sections.
 
 ## Different environments
 Using this library it's easy to manage different environments and corresponding config files.
@@ -192,124 +142,8 @@ from conjector import properties
 class SomeEnvDependingService:
     env_depend_var: str
 ```
-In this case, you set `CONFIG_FILENAME=application-dev.yml` in env variables, and `conjector` will use that file.
+In this case, you can set `CONFIG_FILENAME=application-dev.yml` in env variables, and `conjector` will use that file.
 
-## Lazy initialization
-If you want to create some dataclass instance with filled required data during init, 
-and then populated with config values, you can use the parameter `lazy_init` for this purpose.
-All file constants will be injected after calling the method `init_props`:
-```python
-# All definitions like in previous examples
 
-@properties(lazy_init=True)
-@dataclass
-class EmailMessageServiceConfig:
-    default_text_style: TextStyle
-    language_greetings: list[GreetingDict]
-    mailing_frequency: timedelta | None = None
-    wellcome_message: str = "some_default_message"
-
-email_config = EmailMessageServiceConfig(
-    default_text_style=TextStyle(
-        size=16, weight="normal", font="Arial", color="black"
-    ),
-    language_greetings=[GreetingDict(language="english", text="hello")]
-)
-# it works like a normal dataclass instance
-assert email_config.default_text_style == TextStyle(
-    size=16, weight="normal", font="Arial", color="black"
-)
-assert email_config.mailing_frequency is None
-assert email_config.wellcome_message == "some_default_message"
-
-# after calling `init_props`, config values will be injected. 
-# It also overrides all values that we set during initialize before.
-email_config.init_props()
-assert email_config.default_text_style == TextStyle(
-    size=14, weight="bold", font="Times New Roman", color=(128, 128, 128)
-)
-assert email_config.mailing_frequency == timedelta(days=5, hours=12)
-assert email_config.wellcome_message == (
-    "{greeting}! Thank you for registration, {username}!"
-)
-```
-
-Because there are 3 sources of data (default values, values passed during initialization, and config file values), 
-it could be hard to understand how we can resolve this conflict.
-Bellow is the table to clarify the behavior of the `init_props` method.
-
-| init     | default | config | will be used  |
-|----------|---------|--------|---------------|
-| -        | +       | -      | default       |
-| -        | +       | +      | config        |
-| +        | ~       | -      | init          |
-| +        | ~       | +      | init \ config |
-
-_`+`- provided; `-`- missing; `~`- not affect._
-
-How you can see, when both `init` and `config` values provided, they are equally important,
-but, by default, `config` have higher priority and overrides `init`. 
-If you, for some reason, don't want to override already initialized values, only defaults,
-it's also possible with `init_props(override_init=False)`
-
-## Supported types
-The table below shows how config values (`json` syntax example) are cast to Python types:
-
-| Python type                                  | Config file type                      | Config example                                                                                                                                                 |
-|----------------------------------------------|---------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `int`                                        | `int`<br/>`str`                       | `10`<br/>`"10"`                                                                                                                                                |
-| `float`                                      | `float`<br/>`int`<br/>`str`           | `10.5`<br/>`10`<br/>`"10.5"`                                                                                                                                   |
-| `str`                                        | `str`                                 | `"string value"`                                                                                                                                               |
-| `bool`                                       | `bool`<br/>`int`<br/>`str`            | `true` / `false`<br/>`1` / `0`<br/>`"True"` / `"False"`, `"true"` / `"false"`                                                                                  |
-| `None`                                       | `null`                                | `null`                                                                                                                                                         |
-| `dict`                                       | `dict`                                | `{"key": "value"}`                                                                                                                                             |
-| `list`<br/>`tuple`<br/>`set`<br/>`frozenset` | `list`                                | `["val1", "val2"]`                                                                                                                                             |
-| `TypedDict`                                  | `dict`                                | `{"str_var": "value"}`                                                                                                                                         |
-| `NamedTuple`                                 | `list`<br/>`dict`                     | `["value", 10]`<br/>`{"str_val": "value", "int_val": 10}`                                                                                                      |
-| `dataclass`                                  | `dict`                                | `{"str_val": "str", "int_val": 10}`                                                                                                                            |
-| `datetime.datetime`                          | `str`<br/>`int`<br/>`list`<br/>`dict` | `"2022-12-11T10:20:23"`<br/>`1670754600`<br/>`[2022, 12, 11, 10, 20, 23]`<br/>`{"year": 2022, "month": 12, "day": 11, "hour": 10, "minute": 20, "second": 23}` |
-| `datetime.date`                              | `str`<br/>`list`<br/>`dict`           | `"2022-12-11"`<br/>`[2022, 12, 11]`<br/>`{"year": 2022, "month": 12, "day": 11}`                                                                               |
-| `datetime.time`                              | `str`<br/>`list`<br/>`dict`           | `"12:30:02"`<br/>`[12, 30, 2]`<br/>`{"hour": 12, "minute": 30, "second": 2}`                                                                                   |
-| `datetime.timedelta`                         | `dict`                                | `{"days": 1, "hours": 2, "minutes": 10}`                                                                                                                       |
-| `enum.Enum`                                  | `str`<br/>`int`                       | `"VALUE"`<br/>`10`                                                                                                                                             |
-| `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
-| `decimal.Decimal`                            | `str`<br/>`int`<br/>`float`           | `"12.150"`<br/>`100`<br/>`12.5`                                                                                                                                |
-
-___Warning:___ `ini` config format doesn't support list with dicts or other lists, like `list[list[int]]` or `list[dict[str, Any]]`. 
-Only primitive types (`int`, `float`, `str`, `bool` and `null`) are available.  
-
-### About `ini` config
-By default, `configparser.ConfigParser` doesn't support lists and deep nested dicts, 
-but `conjector` makes it possible to work with them. How does it look?
-
-__Python code:__
-```python
-{
-    "some_key": {
-        "another_key": "value",
-        "deep_key": {
-            "key1": True,
-            "key2": None,
-        }
-    },
-    "just_key": 10,
-    "mixed_list": [10, "20", 30.5, None]
-}
-```
-__`.ini` config__
-```ini
-[some_key]
-another_key = "value"
-[some_key.deep_key]
-key1 = true
-key2 = null
-[root]
-just_key = 10
-mixed_list[] = 10,20,30.5,null
-```
-As you can see above, a list in a `.ini` config is coma-separated values where a key has a suffix `[]` in the end. 
-The dict nesting is also trivial, all you need is just dot-separated keys of nested dicts in `[section]` part.
-Also, you should remember that `configparser` can't work with variables without sections, so if you want to put
-some values in the root of a config just write a section `[root]` (or `[ROOT]`) above, like in the previous example.
 ## About contributing
 You will make `conjector` better if you open issues or create pull requests with improvements.

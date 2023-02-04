@@ -1,0 +1,9 @@
+union_value_float: 125
+union_value_dict:
+  key: value
+union_value_str: "str value"
+union_values_dict:
+  some: value
+union_values_list:
+  - some: val1
+  - some: val2

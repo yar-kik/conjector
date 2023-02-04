@@ -90,7 +90,7 @@ union_float_int_str = 10.5
 union_int_float_str = 10.5
 union_str_int_float = 10.5
 wrong_union_dict_list = "wrong_value"
-list_optional_int_mixed = [20, "", 40]
+list_optional_int_mixed = [20, "null", 40]
 list_union_int_str_mixed = [50, "str", "str2", 60]
 union_dict_list_presented_list = [{key = "value"}]
 

@@ -127,8 +127,8 @@ def properties(
         Class to inject constants. Passed implicit when decorator is used with
         or without parenthesis.
     filename:
-        Name of file with constants. `yaml` and `json` formats are fully
-        supported. `toml` and `ini` are supported but with some limitations.
+        Name of file with constants. `yaml`, `json` and `toml` formats are
+        fully supported. `ini` is supported but with some limitations.
         Config file will be searched in the same directory where is file with
         used decorator. Default value is **"application.yml"**
     override_default:

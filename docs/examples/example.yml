@@ -1,0 +1,11 @@
+services:
+  email_service:
+    key: some value
+  auth_service:
+    key: another value
+
+clients:
+  translation_client:
+    key: value
+
+# and so on...
