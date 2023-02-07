@@ -35,7 +35,7 @@ class TypeConverter:
         pathlib.Path,
     )
 
-    def cast_types(self, type_: Type, value: Any) -> Any:
+    def cast_types(self, type_: Union[Type, Any], value: Any) -> Any:
         args = args if (args := get_args(type_)) else (Any,)
         type_ = origin if (origin := get_origin(type_)) else type_
         value = value if value != "null" else None
@@ -221,6 +221,11 @@ class TypeConverter:
     def _apply_decimal(self, value: Any) -> decimal.Decimal:
         if value is None:
             return decimal.Decimal()
+        if isinstance(value, list):
+            if len(value) != 3:
+                raise ValueError("Decimal value requires 3-items iterable!")
+            value = self.cast_types(Tuple[int, List[int], int], value)
+            return decimal.Decimal(value)
         if self._is_number(value):
             return decimal.Decimal(value)
         raise ValueError(
