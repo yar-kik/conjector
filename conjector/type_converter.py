@@ -15,6 +15,7 @@ from typing import (
 import decimal
 import enum
 import inspect
+import pathlib
 import re
 from collections.abc import Iterable, Mapping
 from dataclasses import MISSING, Field, fields, is_dataclass
@@ -31,6 +32,7 @@ class TypeConverter:
         type(None),
         enum.Enum,
         decimal.Decimal,
+        pathlib.Path,
     )
 
     def cast_types(self, type_: Type, value: Any) -> Any:
@@ -70,6 +72,8 @@ class TypeConverter:
             return self._apply_enum(type_, value)
         if issubclass(type_, decimal.Decimal):
             return self._apply_decimal(value)
+        if issubclass(type_, pathlib.Path):
+            return self._apply_path(value)
         if value is None:
             return type_()
         return type_(value)
@@ -222,6 +226,13 @@ class TypeConverter:
         raise ValueError(
             "Decimal value should be int, float, str or 3-items list!"
         )
+
+    def _apply_path(self, value: Any) -> pathlib.Path:
+        if value is None:
+            return pathlib.Path()
+        if isinstance(value, str):
+            return pathlib.Path(value)
+        raise ValueError("Path constructor accept only string argument!")
 
     def _is_number(self, num: Any) -> bool:
         if isinstance(num, (int, float)):
