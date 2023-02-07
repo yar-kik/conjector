@@ -22,6 +22,7 @@ The table below shows how config values (`json` syntax example) are cast to Pyth
 | `enum.Enum`                                  | `str`<br/>`int`                       | `"VALUE"`<br/>`10`                                                                                                                                             |
 | `re.Pattern`                                 | `str`                                 | `"\w+"`                                                                                                                                                        |
 | `decimal.Decimal`                            | `str`<br/>`int`<br/>`float`           | `"12.150"`<br/>`100`<br/>`12.5`                                                                                                                                |
+| `pathlib.Path`                               | `str`                                 | `"some/path/to/file.txt"`/`"some/path/to/dir/"`                                                                                                                |
 
 ## Optional types
 The default behavior for the `Optional` type hint: try to convert the value to a specified type, if successful - use the converted value, else use None. Also, None will be used if no value is provided.

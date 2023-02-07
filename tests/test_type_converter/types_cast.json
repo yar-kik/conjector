@@ -278,5 +278,10 @@
     "float_decimal_var": 12.5,
     "str_decimal_var": "15.150",
     "general_invalid_decimal_var": {"invalid": "value"}
+  },
+  "path": {
+    "str_file_path_var": "some/path/file.txt",
+    "str_dir_path_var": "some/file/",
+    "invalid_path_var": {"key": "value"}
   }
 }
