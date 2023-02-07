@@ -11,6 +11,7 @@ def decimal_class_fixt(request):
         int_decimal_var: Decimal
         float_decimal_var: Decimal
         str_decimal_var: Decimal
+        tuple_decimal_var: Decimal
         missing_decimal_var: Decimal
 
     return DecimalClass
@@ -29,12 +30,32 @@ def test_decimal_field_ok(decimal_class_fixt):
 
 
 @pytest.mark.parametrize(
+    "decimal_class_fixt",
+    ("types_cast.yml", "types_cast.json", "types_cast.toml"),
+    indirect=True,
+)
+def test_from_tuple_decimal_field_ok(decimal_class_fixt):
+    assert decimal_class_fixt.tuple_decimal_var == Decimal("-0.125")
+
+
+@pytest.mark.parametrize(
     "filename",
     ("types_cast.yml", "types_cast.json", "types_cast.toml", "types_cast.ini"),
 )
-def test_invalid_decimal_field(filename):
+def test_general_invalid_decimal_field(filename):
     with pytest.raises(ValueError):
 
         @properties(filename=filename, root="decimal")
         class GeneralInvalidDecimalClass:
             general_invalid_decimal_var: Decimal
+
+
+@pytest.mark.parametrize(
+    "filename", ("types_cast.yml", "types_cast.json", "types_cast.toml")
+)
+def test_tuple_invalid_decimal_field(filename):
+    with pytest.raises(ValueError):
+
+        @properties(filename=filename, root="decimal")
+        class TupleInvalidDecimalClass:
+            tuple_invalid_decimal_var: Decimal

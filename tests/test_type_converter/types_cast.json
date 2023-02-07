@@ -277,6 +277,8 @@
     "int_decimal_var": 10,
     "float_decimal_var": 12.5,
     "str_decimal_var": "15.150",
+    "tuple_decimal_var": [1, [1, 2, 5], -3],
+    "tuple_invalid_decimal_var": [1, 10],
     "general_invalid_decimal_var": {"invalid": "value"}
   },
   "path": {
