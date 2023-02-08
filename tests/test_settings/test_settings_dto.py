@@ -1,15 +1,15 @@
-from conjector.dtos import DEFAULT, Settings
+from conjector.dtos import Default, Settings
 
 
 def test_merge_user_params_with_custom_settings():
-    user_params = Settings(filename=DEFAULT)
+    user_params = Settings(filename=Default())
     custom = Settings(filename="custom_config.toml")
     assert user_params | custom == custom | user_params
     assert (user_params | custom).filename == "custom_config.toml"
 
 
 def test_merge_user_params_with_default_settings():
-    user_params = Settings(filename=DEFAULT)
+    user_params = Settings(filename=Default())
     default = Settings()
     assert user_params | default == default | user_params
     assert (user_params | default).filename == "application.yml"

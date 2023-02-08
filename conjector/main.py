@@ -3,6 +3,7 @@ from typing import (
     Callable,
     Dict,
     Optional,
+    Set,
     Type,
     TypeVar,
     Union,
@@ -11,9 +12,10 @@ from typing import (
 )
 
 import functools
+import inspect
 
 from conjector.config_handler import ConfigHandler
-from conjector.dtos import DEFAULT, Settings
+from conjector.dtos import Default, Settings
 from conjector.type_converter import TypeConverter
 
 _T = TypeVar("_T")
@@ -31,24 +33,126 @@ class Conjector:
         config = self._config_handler.get_config(
             settings.filename, root=settings.root
         )
-        lazy_properties: Dict[str, Any] = {}
+        cast_values = self._get_cast_config_values(
+            config, get_type_hints(cls), settings.type_cast
+        )
+        self._inject_values_in_class(
+            cls, cast_values, settings.lazy_init, settings.override_default
+        )
+        return cls
+
+    def replace_defaults(
+        self,
+        func: Callable[..., _T],
+        args: tuple,
+        kwargs: dict,
+        settings: Optional[Settings] = None,
+    ) -> _T:
+        settings = self._get_merged_settings(settings)
+        config = self._config_handler.get_config(
+            settings.filename, root=settings.root
+        )
+        type_hints = self._get_func_type_hints(func)
+        cast_values = self._get_cast_config_values(
+            config, type_hints, settings.type_cast
+        )
+        default_values = self._get_func_default_values(func)
+        combined_values = self._combine_cast_and_default_values(
+            cast_values, default_values, set(config.keys())
+        )
+        param = self._inject_values_in_func(
+            func, combined_values, args, kwargs
+        )
+        return func(*param.args, **param.kwargs)
+
+    def _inject_values_in_class(
+        self,
+        cls: Type[_T],
+        cast_values: Dict[str, Any],
+        lazy_init: bool,
+        override_default: bool,
+    ) -> None:
         setattr(
             cls,
             "init_props",
             lambda obj=cls, override_init=True: self._init_props(
-                lazy_properties, obj, override_init=override_init
+                cast_values, obj, override_init=override_init
             ),
         )
-        for class_var, type_ in get_type_hints(cls).items():
+
+        if not lazy_init:
+            self._init_props(cast_values, cls, override_init=override_default)
+
+    def _inject_values_in_func(
+        self, func: Callable, values: Dict[str, Any], args: tuple, kwargs: dict
+    ) -> inspect.BoundArguments:
+        new_params = []
+        func_params = inspect.signature(func).parameters
+        for name, param in func_params.items():
+            if self._is_override_default(param):
+                param = param.replace(default=values.get(name))
+            new_params.append(param)
+        params = (
+            inspect.signature(func)
+            .replace(parameters=new_params)
+            .bind(*args, **kwargs)
+        )
+        params.apply_defaults()
+        return params
+
+    def _combine_cast_and_default_values(
+        self,
+        cast_values: Dict[str, Any],
+        default_values: Dict[str, Any],
+        config_keys: Set[str],
+    ) -> Dict[str, Optional[Any]]:
+        values = {}
+        for name in default_values:
+            value = cast_values.get(name)
+            if name not in config_keys:
+                value = (
+                    default_values[name]
+                    # TODO: to check sentinel object
+                    if default_values[name] is not None
+                    else value
+                )
+            values[name] = value
+        return values
+
+    def _get_func_default_values(self, func: Callable) -> Dict[str, Any]:
+        return {
+            k: v.default.value
+            for k, v in inspect.signature(func).parameters.items()
+            if self._is_override_default(v)
+        }
+
+    def _get_func_type_hints(self, func: Callable) -> Dict[str, Any]:
+        # method is required because `typing.get_type_hints` doesn't work on
+        # function parameters without type annotation.
+        return {
+            k: Any if v.annotation is v.empty else v.annotation
+            for k, v in inspect.signature(func).parameters.items()
+            if self._is_override_default(v)
+        }
+
+    def _is_override_default(self, param: inspect.Parameter) -> bool:
+        return param.default is not param.empty and isinstance(
+            param.default, Default
+        )
+
+    def _get_cast_config_values(
+        self,
+        config: Dict[str, Any],
+        type_hints: Dict[str, Any],
+        type_cast: bool,
+    ) -> Dict[str, Any]:
+        cast_values = {}
+        for class_var, type_ in type_hints.items():
             value = config.get(class_var)
-            if settings.type_cast:
+            if type_cast:
                 value = self._type_converter.cast_types(type_, value)
-            lazy_properties[class_var] = value
-        if not settings.lazy_init:
-            self._init_props(
-                lazy_properties, cls, override_init=settings.override_default
-            )
-        return cls
+            cast_values[class_var] = value
+        return cast_values
 
     @staticmethod
     def _init_props(
@@ -111,12 +215,15 @@ def properties(
 def properties(
     cls: Optional[Type[_T]] = None,
     *,
-    filename: str = DEFAULT,
-    override_default: bool = DEFAULT,
-    root: str = DEFAULT,
-    type_cast: bool = DEFAULT,
-    lazy_init: bool = DEFAULT,
-) -> Union[Callable[[Type[_T]], Type[_T]], Type[_T]]:
+    filename: str = Default("filename"),
+    override_default: bool = Default(False),
+    root: str = Default(""),
+    type_cast: bool = Default(True),
+    lazy_init: bool = Default(False),
+) -> Union[
+    Callable[[Type[_T]], Union[Type[_T], Callable[..., _T]]],
+    Union[Type[_T], Callable[..., _T]],
+]:
     """
     Decorator to inject config file values into class variables and cast them
     according to type hints.
@@ -144,7 +251,6 @@ def properties(
         keyword param `override_init` to keep values of initialized class or
         override them with config values. Default value is **False**
 
-
     Returns
     -------
     cls
@@ -152,19 +258,22 @@ def properties(
     """
 
     @functools.wraps(cls)  # type: ignore
-    def wrapper(cls_: Type[_T]) -> Type[_T]:
-        conjector = Conjector()
-        return conjector.inject_config(
-            cls_,
-            settings=Settings(
-                filename=filename,
-                override_default=override_default,
-                root=root,
-                type_cast=type_cast,
-                lazy_init=lazy_init,
-            ),
-        )
+    def wrapper(cls_: Type[_T]) -> Union[Type[_T], Callable[..., _T]]:
+        def argument_handler(*args: Any, **kwargs: Any) -> Any:
+            return conjector.replace_defaults(cls_, args, kwargs, settings)
 
+        if inspect.isfunction(cls_):
+            return argument_handler
+        return conjector.inject_config(cls_, settings=settings)
+
+    conjector = Conjector()
+    settings = Settings(
+        filename=filename,
+        override_default=override_default,
+        root=root,
+        type_cast=type_cast,
+        lazy_init=lazy_init,
+    )
     if cls is None:
         return wrapper
     return wrapper(cls)
