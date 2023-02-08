@@ -1,8 +1,13 @@
-from typing import Any
+from typing import Any, Optional
 
 from dataclasses import dataclass, fields
 
-DEFAULT: Any = object()
+_DefaultType: Any = object
+
+
+@dataclass(frozen=True)
+class Default(_DefaultType):
+    value: Optional[Any] = None
 
 
 @dataclass
@@ -19,6 +24,6 @@ class Settings:
             other_val = getattr(other, field.name)
             self_val = getattr(self, field.name)
             merged_kwargs[field.name] = (
-                other_val if other_val is not DEFAULT else self_val
+                other_val if not isinstance(other_val, Default) else self_val
             )
         return Settings(**merged_kwargs)
