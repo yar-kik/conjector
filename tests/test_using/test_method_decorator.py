@@ -1,7 +1,7 @@
 from typing import Tuple
 
 from conjector import properties
-from conjector.dtos import Default
+from conjector.entities import Default
 from tests.conftest import patch_config
 
 

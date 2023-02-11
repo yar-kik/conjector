@@ -15,7 +15,7 @@ import functools
 import inspect
 
 from conjector.config_handler import ConfigHandler
-from conjector.dtos import Default, Settings
+from conjector.entities import MISSING, Default, Settings
 from conjector.type_converter import TypeConverter
 
 _T = TypeVar("_T")
@@ -112,8 +112,7 @@ class Conjector:
             if name not in config_keys:
                 value = (
                     default_values[name]
-                    # TODO: to check sentinel object
-                    if default_values[name] is not None
+                    if default_values[name] is not MISSING
                     else value
                 )
             values[name] = value

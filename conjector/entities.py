@@ -1,13 +1,14 @@
-from typing import Any, Optional
+from typing import Any
 
 from dataclasses import dataclass, fields
 
 _DefaultType: Any = object
+MISSING: Any = object()
 
 
 @dataclass(frozen=True)
 class Default(_DefaultType):
-    value: Optional[Any] = None
+    value: Any = MISSING
 
 
 @dataclass
