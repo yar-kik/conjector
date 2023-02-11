@@ -1,4 +1,4 @@
-from conjector.dtos import Default, Settings
+from conjector.entities import Default, Settings
 
 
 def test_merge_user_params_with_custom_settings():

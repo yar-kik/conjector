@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from conjector import Conjector, properties
 from conjector.config_handler import ConfigHandler
-from conjector.dtos import Settings
+from conjector.entities import Settings
 
 
 class BaseClass:
