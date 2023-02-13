@@ -3,6 +3,7 @@ import sys
 from unittest.mock import patch
 
 from conjector import properties
+from conjector.config_handler import ConfigHandler
 
 
 class BaseClass:
