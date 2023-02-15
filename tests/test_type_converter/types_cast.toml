@@ -105,6 +105,11 @@ position_date_var = [2_022, 10, 20]
 text_date_var = "2022-11-24"
 position_time_var = [10, 23, 20]
 text_time_var = "08:49:56"
+wrong_datetime_var = "wrong_var"
+wrong_date_var = "wrong_var"
+wrong_time_var = "wrong_var"
+wrong_timedelta_var = "wrong_var"
+
 
 [datetime.keywords_datetime_var]
 year = 2_022

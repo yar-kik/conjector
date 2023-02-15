@@ -157,6 +157,15 @@ class TypeConverter:
     def _apply_datetime(
         self, type_: Type[Union[datetime, date, time, timedelta]], values: Any
     ) -> Union[datetime, date, time, timedelta]:
+        if values is None:
+            if issubclass(type_, timedelta):
+                return timedelta()
+            if issubclass(type_, datetime):
+                return datetime(year=1970, month=1, day=1)
+            if issubclass(type_, date):
+                return date(year=1970, month=1, day=1)
+            if issubclass(type_, time):
+                return time()
         if issubclass(type_, timedelta):
             if isinstance(values, Mapping):
                 values = self.cast_types(Dict[str, int], values)

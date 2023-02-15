@@ -12,6 +12,7 @@ def datetime_class_fixt(request):
         keywords_datetime_var: datetime.datetime
         position_datetime_var: datetime.datetime
         text_datetime_var: datetime.datetime
+        missing_datetime_var: datetime.datetime
 
     return DatetimeClass
 
@@ -23,6 +24,7 @@ def date_class_fixt(request):
         keywords_date_var: datetime.date
         position_date_var: datetime.date
         text_date_var: datetime.date
+        missing_date_var: datetime.date
 
     return DateClass
 
@@ -34,6 +36,7 @@ def time_class_fixt(request):
         keywords_time_var: datetime.time
         position_time_var: datetime.time
         text_time_var: datetime.time
+        missing_time_var: datetime.time
 
     return TimeClass
 
@@ -43,6 +46,7 @@ def timedelta_class_fixt(request):
     @properties(filename=request.param, root="datetime")
     class TimedeltaClass:
         keywords_timedelta_var: datetime.timedelta
+        missing_timedelta_var: datetime.timedelta
 
     return TimedeltaClass
 
