@@ -33,7 +33,7 @@ class SomeClass:
 @patch_config({"a": 10, "b": 20})
 def test_decorator_on_magic_method():
     obj = SomeClass()
-    assert obj.a, obj.b == (10, 20)
+    assert (obj.a, obj.b) == (10, 20)
 
 
 @patch_config({"a": 10, "b": 20})
@@ -50,3 +50,35 @@ def test_decorator_on_staticmethod():
 def test_decorator_on_simple_method():
     obj = SomeClass()
     assert obj.simple_method() == (10, 20)
+
+
+@patch_config({"a": 10, "b": 20})
+def test_decorator_on_class_inject_decorator_on_all_methods():
+    @properties
+    class OtherClass:
+        def __init__(self, a: int = Default(), b: int = Default()) -> None:
+            self.a = a
+            self.b = b
+
+        def simple_method(
+            self, a: int = Default(), b: int = Default()
+        ) -> Tuple[int, int]:
+            return a, b
+
+        @classmethod
+        def cls_method(
+            cls, a: int = Default(), b: int = Default()
+        ) -> Tuple[int, int]:
+            return a, b
+
+        @staticmethod
+        def stat_method(
+            a: int = Default(), b: int = Default()
+        ) -> Tuple[int, int]:
+            return a, b
+
+    obj = OtherClass()
+    assert (obj.a, obj.b) == (10, 20)
+    assert obj.simple_method() == (10, 20)
+    assert OtherClass.cls_method() == (10, 20)
+    assert OtherClass.stat_method() == (10, 20)
