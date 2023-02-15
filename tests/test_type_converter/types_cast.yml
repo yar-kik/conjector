@@ -189,6 +189,7 @@ datetime:
     - 44
     - 20
   text_datetime_var: 2022-12-10T22:44:56
+  wrong_datetime_var: wrong_var
 
   keywords_date_var:
     year: 2022
@@ -199,6 +200,7 @@ datetime:
     - 10
     - 20
   text_date_var: 2022-11-24
+  wrong_date_var: wrong_var
 
   keywords_time_var:
     hour: 2
@@ -209,6 +211,7 @@ datetime:
     - 23
     - 20
   text_time_var: "08:49:56"
+  wrong_time_var: wrong_var
 
   keywords_timedelta_var:
     days: 1
@@ -216,6 +219,7 @@ datetime:
     minutes: 42
     seconds: 34
     weeks: 1
+  wrong_timedelta_var: wrong_var
 
 enum:
   simple_enum_var: GREEN

@@ -262,7 +262,11 @@
       "minutes": 42,
       "seconds": 34,
       "weeks": 1
-    }
+    },
+    "wrong_datetime_var": "wrong_var",
+    "wrong_date_var": "wrong_var",
+    "wrong_time_var": "wrong_var",
+    "wrong_timedelta_var": "wrong_var"
   },
   "enum": {
     "simple_enum_var": "GREEN",
