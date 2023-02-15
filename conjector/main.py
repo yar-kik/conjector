@@ -2,6 +2,7 @@ from typing import (
     Any,
     Callable,
     Dict,
+    List,
     Optional,
     Set,
     Type,
@@ -29,6 +30,13 @@ class Conjector:
     def inject_config(
         self, cls: Type[_T], settings: Optional[Settings] = None
     ) -> Type[_T]:
+        def replace_default(func: Callable) -> Callable:
+            @functools.wraps(func)
+            def wrapper(*args: Any, **kwargs: Any) -> Callable:
+                return self.replace_defaults(func, args, kwargs)
+
+            return wrapper
+
         settings = self._get_merged_settings(settings)
         config = self._config_handler.get_config(
             settings.filename, root=settings.root
@@ -39,6 +47,12 @@ class Conjector:
         self._inject_values_in_class(
             cls, cast_values, settings.lazy_init, settings.override_default
         )
+
+        methods = self._get_default_class_var(cls)
+
+        for method in methods:
+            original_method = getattr(cls, method)
+            setattr(cls, method, replace_default(original_method))
         return cls
 
     def replace_defaults(
@@ -64,6 +78,19 @@ class Conjector:
             func, combined_values, args, kwargs
         )
         return func(*param.args, **param.kwargs)
+
+    def _get_default_class_var(self, obj: type) -> List[str]:
+        def is_dunder_method(name: str) -> bool:
+            return name.startswith("__") and name.endswith("__")
+
+        return [
+            k
+            for k, v in inspect.getmembers(obj)
+            if k == "__init__"
+            or not is_dunder_method(k)
+            and callable(v)
+            or isinstance(v, (staticmethod, classmethod))
+        ]
 
     def _inject_values_in_class(
         self,
