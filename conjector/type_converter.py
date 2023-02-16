@@ -34,6 +34,14 @@ class TypeConverter:
         decimal.Decimal,
         pathlib.Path,
     )
+    _boolean_map = {
+        "true": True,
+        "True": True,
+        "1": True,
+        "false": False,
+        "False": False,
+        "0": False,
+    }
 
     def cast_types(self, type_: Union[Type, Any], value: Any) -> Any:
         args = args if (args := get_args(type_)) else (Any,)
@@ -47,19 +55,31 @@ class TypeConverter:
             return value
         if self._is_union(type_):
             return self._apply_union(args, value)
-        if issubclass(type_, list):
-            return self._apply_list(args, value)
-        if issubclass(type_, tuple):
-            return self._apply_tuple(type_, args, value)
-        if issubclass(type_, dict):
-            return self._apply_dict(type_, args, value)
-        if issubclass(type_, (set, frozenset)):
-            return self._apply_set(type_, args, value)
+        if issubclass(type_, Mapping):
+            return self._cast_mapping(type_, args, value)
+        if issubclass(type_, Iterable):
+            return self._cast_iterable(type_, args, value)
         if self._is_datetime(type_):
             return self._apply_datetime(type_, value)
         if is_dataclass(type_):
             return self._apply_dataclass(type_, value)
         return self._cast_base(type_, value)
+
+    def _cast_iterable(self, type_: type, args: tuple, value: Any) -> Any:
+        if type_ == str:
+            return self._cast_base(type_, value)
+        if type_ == list:
+            return self._apply_list(args, value)
+        if issubclass(type_, tuple):
+            return self._apply_tuple(type_, args, value)
+        if type_ in (set, frozenset):
+            return self._apply_set(type_, args, value)
+        raise ValueError("Unsupported iterable type was found!")
+
+    def _cast_mapping(self, type_: type, args: tuple, value: Any) -> Any:
+        if issubclass(type_, dict):
+            return self._apply_dict(type_, args, value)
+        raise ValueError("Unsupported mapping type was found!")
 
     def _cast_base(self, type_: Type, value: Any) -> Any:
         if self._is_none_type(type_):
@@ -70,23 +90,20 @@ class TypeConverter:
             return self._apply_regex_pattern(value)
         if issubclass(type_, enum.Enum):
             return self._apply_enum(type_, value)
-        if issubclass(type_, decimal.Decimal):
+        if type_ == decimal.Decimal:
             return self._apply_decimal(value)
-        if issubclass(type_, pathlib.Path):
+        if type_ == pathlib.Path:
             return self._apply_path(value)
         if value is None:
             return type_()
         return type_(value)
 
     def _cast_bool(self, value: Any) -> Optional[bool]:
+        if value is None:
+            return bool()
         if isinstance(value, bool):
             return value
-        value = str(value)
-        if value in ("true", "True", "1"):
-            return True
-        if value in ("false", "False", "0", "None"):
-            return False
-        return None
+        return self._boolean_map.get(str(value))
 
     def _apply_list(self, args: Tuple[Type[list], ...], values: Any) -> list:
         if values is None:
@@ -155,28 +172,25 @@ class TypeConverter:
         return type_(**field_mapping)
 
     def _apply_datetime(
-        self, type_: Type[Union[datetime, date, time, timedelta]], values: Any
+        self,
+        type_: Union[Type[datetime], Type[date], Type[time], Type[timedelta]],
+        values: Any,
     ) -> Union[datetime, date, time, timedelta]:
         if values is None:
-            if issubclass(type_, timedelta):
-                return timedelta()
-            if issubclass(type_, datetime):
-                return datetime(year=1970, month=1, day=1)
-            if issubclass(type_, date):
-                return date(year=1970, month=1, day=1)
-            if issubclass(type_, time):
-                return time()
-        if issubclass(type_, timedelta):
+            default_value = {
+                datetime: datetime(year=1970, month=1, day=1),
+                date: date(year=1970, month=1, day=1),
+            }.get(type_)
+            return default_value if default_value else type_()  # type: ignore
+        if type_ == timedelta:
             if isinstance(values, Mapping):
                 values = self.cast_types(Dict[str, int], values)
                 return timedelta(**values)
             raise ValueError(f"Cannot cast value {values} to timedelta")
-        if issubclass(type_, datetime) and (
-            isinstance(values, (int, float)) or self._is_number(values)
-        ):
+        if type_ == datetime and self._is_number(values):
             return datetime.utcfromtimestamp(float(values))
         if isinstance(values, str):
-            return type_.fromisoformat(values)
+            return type_.fromisoformat(values)  # type: ignore
         if isinstance(values, Mapping):
             values = self.cast_types(Dict[str, int], values)
             return type_(**values)
@@ -277,7 +291,7 @@ class TypeConverter:
         return isinstance(type_, TypeVar) or type_ == Any
 
     def _is_datetime(self, type_: type) -> bool:
-        return issubclass(type_, (datetime, date, time, timedelta))
+        return type_ in (datetime, date, time, timedelta)
 
     def _is_union(self, type_: type) -> bool:
         return type_ == Union or type_.__name__ == "UnionType"

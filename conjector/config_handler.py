@@ -185,4 +185,4 @@ class ConfigHandler:
             config = functools.reduce(
                 lambda x, y: x[y], root.split("."), config
             )
-        return config
+        return {} if config is None else config
