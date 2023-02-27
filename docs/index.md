@@ -13,4 +13,5 @@ config_formats
 supported_types
 global_settings
 lazy_initialization
+function_defaults
 ```

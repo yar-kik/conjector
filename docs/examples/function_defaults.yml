@@ -1,0 +1,6 @@
+some_func_scope:
+  required: 11
+  regular_default: 22
+  specified_default: 33
+  file_default: 44
+not_existing_func_scope:
